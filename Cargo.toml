@@ -1,0 +1,12 @@
+[package]
+name = "pf4shconf"
+version = "0.1.0"
+authors = ["arne"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+diesel = { version = "1.4.4", features = ["postgres"]}
+dotenv = "0.15.0"
+clap = { version = "3.0.0-beta.2", features = ["yaml"]}

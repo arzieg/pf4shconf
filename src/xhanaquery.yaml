@@ -1,0 +1,47 @@
+name: xhanaquery
+version: "1.0"
+about: Query xHANA Configurationdatabase
+author: arne.ziegler@edeka.de
+
+# AppSettings can be defined as a list and are **not** ascii case sensitive
+settings:
+    - ArgRequiredElseHelp
+
+# All Args must be defined in the 'args:' list where the name of the arg, is the
+# key to a Hash object
+args:
+    # The name of this argument, is 'opt' which will be used to access the value
+    # later in your Rust code
+    - sid:
+        help: if only --sid is set, show defined configuration versions, if --sid and -- configversion is set show configuration.
+        short: s
+        long: sid
+        multiple: true
+        takes_value: true
+    - configversion:
+        help: set configuration version. Can only be used with --sid. 
+        short: c
+        long: configversion
+        requires: sid
+        multiple: true
+        takes_value: true
+    - arctype:
+        help: Show architecturetype, can only be used as single parameter
+        short: a
+        long: architecture
+        possible_values: [ SU, SO, MajorityMaker, ISCSIServer, Toolserver ]
+        multiple: true
+        takes_value: true
+        conflicts_with: 
+          - host
+          - configversion
+    - host:
+        help: Show Host(s) configuration, can only be used as single parameter
+        short: H
+        long: host
+        multiple: true
+        takes_value: true
+        conflicts_with: 
+          - sid
+          - configversion
+          - arctype

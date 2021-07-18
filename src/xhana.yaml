@@ -1,0 +1,70 @@
+name: xhana
+version: "1.0"
+about: xHANA Configurationtool
+author: Arne Ziegler (arne.ziegler@gmx.net)
+
+# AppSettings can be defined as a list and are **not** ascii case sensitive
+settings:
+    - ArgRequiredElseHelp
+
+# All subcommands must be listed in the 'subcommand:' object, where the key to
+# the list is the name of the subcommand, and all settings for that command are
+# are part of a Hash object
+subcommands:
+    # The name of this subcommand will be 'subcmd' which can be accessed in your
+    # Rust code later
+    - add:
+        about: Add Configuration to XHAANA Configdatabase
+        version: "1.0"
+        author: Arne Ziegler@gmx.net
+        # Subcommand args are exactly like App args
+        subcommands:
+            - parameter:
+                about: Add xHANA Parameter
+                # Subcommand args are exactly like App args
+                args:
+                    - configversion:
+                        short: c
+                        long: configversion
+                        multiple: false
+                        help: Versionsnumber of the parameter
+                        required: true
+                        min_values: 1
+                        max_values: 1
+                    - info:
+                        short: i
+                        long: info
+                        multiple: false
+                        help: Text to display about the parameter
+                        required: true
+                        min_values: 1
+                        max_values: 1
+                    - name:
+                        short: n
+                        long: name
+                        multiple: false
+                        help: Technical name of the parameter
+                        required: true
+                        min_values: 1
+                        max_values: 1
+                    - type:
+                        short: t
+                        long: type
+                        multiple: false
+                        help: Type of the parameter 
+                        min_values: 1
+                        max_values: 1
+                        default_value: string
+                        possible_values:
+                            - string
+                            - integer
+                            - char
+                    - mandatory:
+                        short: m
+                        long: mandatory
+                        help: Mandatory
+                        takes_value: true
+                        default_value: y
+                        possible_values:
+                            - y
+                            - n
