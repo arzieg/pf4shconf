@@ -1,1 +1,1 @@
-# pf4shconf
+# shconf
