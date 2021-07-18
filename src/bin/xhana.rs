@@ -3,11 +3,11 @@ extern crate diesel;
 
 use self::pf4shconf::*;
 // use std::io;
-use clap::{load_yaml, App, AppSettings, Arg};
-
+// use clap::{load_yaml, App, AppSettings, Arg};
+use clap::{load_yaml, App};
 
 fn main() {
-    use pf4shconf::schema::*;
+//    use pf4shconf::schema::*;
 
     let connection = establish_connection();
 
@@ -33,7 +33,7 @@ fn main() {
                     println!("Technical Parametername: {}", parameter);
                     println!("Type of Parametervalue: {}", typ);
                     println!("Mandatory: {}", mandatory);
-                    let xhp = add_xhanaparameter(&connection, &configversion, &info, &parameter, &typ, &mandatory);
+                    add_xhanaparameter(&connection, &configversion, &info, &parameter, &typ, &mandatory);
                     println!("\nSaved configversion {}, info {}, parameter {}, typ {}, mandatory {}", configversion, info, parameter, typ, mandatory);
                     //query_hanaparameter(&connection, &configversion);
                 }
@@ -43,7 +43,7 @@ fn main() {
                     let arctype = parameter_matches.value_of("arctype").unwrap();
                     println!("SID: {}", sid);
                     println!("Arctype: {}", arctype );
-                    let xha = add_xhanaarc(&connection , &sid, &arctype);
+                    add_xhanaarc(&connection , &sid, &arctype);
                     // let xhp = add_xhanaparameter(&connection, &configversion, &info, &parameter, &typ, &mandatory);
                     // println!("\nSaved configversion {}, info {}, parameter {}, typ {}, mandatory {}", configversion, info, parameter, typ, mandatory);
                 }

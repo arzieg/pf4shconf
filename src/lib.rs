@@ -115,7 +115,7 @@ pub fn add_xhanaarc<'a>(conn: &PgConnection, sid: &'a str, arc: &'a str) -> XHan
 
     diesel::insert_into(xhanaarc::table)
         .values(&new_xha)
-        .on_conflict((xhanaarc::sid))
+        .on_conflict(xhanaarc::sid)
         .do_update()
         .set(&new_xha)
         .get_result(conn)
