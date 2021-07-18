@@ -102,8 +102,8 @@ pub fn query_hanaparameter<'a>(conn: &PgConnection, pversion: &str, pparameter: 
 
 }
 
-// Add HANA Parameter 
-// Save dataset in table xhanaparameter
+// Add HANA Architecture 
+// Save dataset in table xhanaarc
 pub fn add_xhanaarc<'a>(conn: &PgConnection, sid: &'a str, arc: &'a str) -> XHanaArcTable {
     
     use schema::xhanaarc;
@@ -118,6 +118,26 @@ pub fn add_xhanaarc<'a>(conn: &PgConnection, sid: &'a str, arc: &'a str) -> XHan
         .on_conflict(xhanaarc::sid)
         .do_update()
         .set(&new_xha)
+        .get_result(conn)
+        .expect("Error savong new parameter string")
+}
+
+// Add HANA Datacenter 
+// Save dataset in table xhanadatacenter
+pub fn add_xhanadc<'a>(conn: &PgConnection, id: &'a i32, name: &'a str) -> XHanaDCTable {
+    
+    use schema::xhanadatacenter;
+
+    let new_xhd = XHanaDCInsert {
+        id: id,
+        name: name,
+    };
+
+    diesel::insert_into(xhanadatacenter::table)
+        .values(&new_xhd)
+        .on_conflict(xhanadatacenter::id)
+        .do_update()
+        .set(&new_xhd)
         .get_result(conn)
         .expect("Error savong new parameter string")
 }

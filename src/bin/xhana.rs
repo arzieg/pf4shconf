@@ -44,8 +44,15 @@ fn main() {
                     println!("SID: {}", sid);
                     println!("Arctype: {}", arctype );
                     add_xhanaarc(&connection , &sid, &arctype);
-                    // let xhp = add_xhanaparameter(&connection, &configversion, &info, &parameter, &typ, &mandatory);
-                    // println!("\nSaved configversion {}, info {}, parameter {}, typ {}, mandatory {}", configversion, info, parameter, typ, mandatory);
+                }
+                Some(("datacenter", parameter_matches)) => {
+                    // Now we have a reference to remote's matches
+                    let id_str = parameter_matches.value_of("id").unwrap();
+                    let name = parameter_matches.value_of("dcname").unwrap();
+                    let id: i32 = id_str.parse().expect("Error: ID is not a integer");
+                    println!("ID: {}", id);
+                    println!("Name: {}", name );
+                    add_xhanadc(&connection, &id, &name);
                 }
                 Some(("local", _)) => {
                     println!("'git push local' was used");

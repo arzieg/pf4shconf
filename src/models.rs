@@ -42,6 +42,13 @@ pub struct XHanaArcInsert<'a> {
     pub arc: &'a str,
 }
 
+#[derive(Insertable, AsChangeset)]
+#[table_name="xhanadatacenter"]
+pub struct XHanaDCInsert<'a> {
+    pub id: &'a i32,
+    pub name: &'a str,
+}
+
 #[derive(Queryable)]
 pub struct XHanaParameterTable {
     pub version: String,
@@ -55,4 +62,10 @@ pub struct XHanaParameterTable {
 pub struct XHanaArcTable {
     pub sid: String,
     pub arc: String,
+}
+
+#[derive(Queryable)]
+pub struct XHanaDCTable {
+    pub id: i32,
+    pub name: String,
 }

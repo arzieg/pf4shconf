@@ -92,4 +92,23 @@ subcommands:
                             - SOR
                             - SU
                             - SUR
-                    
+            - datacenter:
+                about: Add datacenter
+                # Subcommand args are exactly like App args
+                args:
+                    - dcname:
+                        short: d
+                        long: dcname
+                        multiple: false
+                        help: Name of the datacenter
+                        required: true
+                        min_values: 1
+                        max_values: 1
+                    - id:
+                        short: i
+                        long: id
+                        help: ID of the Datacenter
+                        takes_value: true
+                        required: true
+                        min_values: 1
+                        max_values: 1
