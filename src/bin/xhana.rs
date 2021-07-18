@@ -37,6 +37,16 @@ fn main() {
                     println!("\nSaved configversion {}, info {}, parameter {}, typ {}, mandatory {}", configversion, info, parameter, typ, mandatory);
                     //query_hanaparameter(&connection, &configversion);
                 }
+                Some(("architecture", parameter_matches)) => {
+                    // Now we have a reference to remote's matches
+                    let sid = parameter_matches.value_of("sid").unwrap();
+                    let arctype = parameter_matches.value_of("arctype").unwrap();
+                    println!("SID: {}", sid);
+                    println!("Arctype: {}", arctype );
+                    let xha = add_xhanaarc(&connection , &sid, &arctype);
+                    // let xhp = add_xhanaparameter(&connection, &configversion, &info, &parameter, &typ, &mandatory);
+                    // println!("\nSaved configversion {}, info {}, parameter {}, typ {}, mandatory {}", configversion, info, parameter, typ, mandatory);
+                }
                 Some(("local", _)) => {
                     println!("'git push local' was used");
                 }

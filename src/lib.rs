@@ -87,13 +87,6 @@ pub fn add_xhanaparameter<'a>(conn: &PgConnection, version: &'a str, info: &'a s
         .set(&new_xhp)
         .get_result(conn)
         .expect("Error savong new parameter string")
-
-//    diesel::insert_into(xhanaparameter::table)
-//        .values(&new_xhp)
-//        .get_result(conn)
-//        .expect("Error savong new parameter string")
-
-
 }
 
 pub fn query_hanaparameter<'a>(conn: &PgConnection, pversion: &str, pparameter: &str)  {
@@ -107,13 +100,24 @@ pub fn query_hanaparameter<'a>(conn: &PgConnection, pversion: &str, pparameter: 
         .get_results::<XHanaParameterTable>(conn)
         .expect("Error loading parameters");
 
+}
+
+// Add HANA Parameter 
+// Save dataset in table xhanaparameter
+pub fn add_xhanaarc<'a>(conn: &PgConnection, sid: &'a str, arc: &'a str) -> XHanaArcTable {
     
- //   println!("Displaying {} XHanaParameter", results.len());
- //   for xhp in results {
- //       println!(
- //           "{} {} {} = {:?} ",
- //           xhp.version, xhp.parameter, xhp.typ, xhp.mandatory
- //       );
- //       println!("------------------------------------------------------------------\n");
- //   }
+    use schema::xhanaarc;
+
+    let new_xha = XHanaArcInsert {
+        sid: sid,
+        arc: arc,
+    };
+
+    diesel::insert_into(xhanaarc::table)
+        .values(&new_xha)
+        .on_conflict((xhanaarc::sid))
+        .do_update()
+        .set(&new_xha)
+        .get_result(conn)
+        .expect("Error savong new parameter string")
 }

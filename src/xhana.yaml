@@ -68,3 +68,28 @@ subcommands:
                         possible_values:
                             - y
                             - n
+            - architecture:
+                about: Add type of architecture
+                # Subcommand args are exactly like App args
+                args:
+                    - sid:
+                        short: s
+                        long: sid
+                        multiple: false
+                        help: SID of target system
+                        required: true
+                        min_values: 1
+                        max_values: 1
+                    - arctype:
+                        short: a
+                        long: arctype
+                        help: Architecturetype - ScaleOutReplicated (SOR), ScaleOut (SO), ScaleUpReplicated (SUR), ScaleUp (SU)
+                        takes_value: true
+                        default_value: SOR
+                        required: true
+                        possible_values:
+                            - SO
+                            - SOR
+                            - SU
+                            - SUR
+                    

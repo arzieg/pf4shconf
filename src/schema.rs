@@ -1,6 +1,5 @@
 table! {
-    xhanaarc (id) {
-        id -> Int4,
+    xhanaarc (sid) {
         sid -> Varchar,
         arc -> Varchar,
     }
@@ -40,7 +39,7 @@ table! {
         parameter -> Varchar,
         info -> Nullable<Varchar>,
         typ -> Varchar,
-        mandatory -> Nullable<Varchar>,
+        mandatory -> Nullable<Bpchar>,
     }
 }
 

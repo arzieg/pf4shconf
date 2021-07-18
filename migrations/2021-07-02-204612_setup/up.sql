@@ -40,9 +40,9 @@ CREATE TABLE xHANAENVIRONMENT (
 -- Architekturtyp je SID
 -- Key: SID
 CREATE TABLE xHANAARC (
-  id SERIAL PRIMARY KEY,
   sid VARCHAR NOT NULL,
-  arc VARCHAR NOT NULL
+  arc VARCHAR NOT NULL,
+  primary key(sid)
 );
  
 -- xHANAVERSION
@@ -63,7 +63,7 @@ CREATE TABLE xHANAPARAMETER (
   parameter VARCHAR NOT NULL,
   info VARCHAR,
   typ VARCHAR NOT NULL,
-  mandatory VARCHAR, 
+  mandatory CHAR, 
   primary key(version, parameter)
 );
 
