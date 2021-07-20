@@ -19,7 +19,7 @@ pub fn establish_connection() -> PgConnection {
     PgConnection::establish(&database_url).expect(&format!("Error connecting to {}", database_url))
 }
 
-pub fn create_xhanageneral<'a>(
+/* pub fn create_xhanageneral<'a>(
     conn: &PgConnection,
     sid: &'a str,
     version: &'a str,
@@ -39,9 +39,9 @@ pub fn create_xhanageneral<'a>(
         .values(&new_xhg)
         .get_result(conn)
         .expect("Error saving new general parameter")
-}
+} */
 
-pub fn query_sid_version<'a>(conn: &PgConnection, psid: &str, pversion: &str) {
+/* pub fn query_sid_version<'a>(conn: &PgConnection, psid: &str, pversion: &str) {
     use schema::xhanageneral::dsl::*;
 
     println!("SID = {}, VERSION = {}", &psid, &pversion);
@@ -60,12 +60,12 @@ pub fn query_sid_version<'a>(conn: &PgConnection, psid: &str, pversion: &str) {
         );
         println!("------------------------------------------------------------------\n");
     }
-}
+} */
 
 // Add HANA Parameter 
 // Save dataset in table xhanaparameter
 pub fn add_xhanaparameter<'a>(conn: &PgConnection, version: &'a str, info: &'a str,
-    parameter: &'a str, typ: &'a str, mandatory: &'a str) -> XHanaParameterTable {
+    parameter: &'a str, valuetype: &'a str, mandatory: &'a str) -> XHanaParameterTable {
     
     use schema::xhanaparameter;
 
@@ -73,7 +73,7 @@ pub fn add_xhanaparameter<'a>(conn: &PgConnection, version: &'a str, info: &'a s
         version: version,
         parameter: parameter,
         info: info,
-        typ: typ,
+        valuetype: valuetype,
         mandatory: mandatory,
     };
 
@@ -124,18 +124,18 @@ pub fn add_xhanaarc<'a>(conn: &PgConnection, sid: &'a str, arc: &'a str) -> XHan
 
 // Add HANA Datacenter 
 // Save dataset in table xhanadatacenter
-pub fn add_xhanadc<'a>(conn: &PgConnection, id: &'a i32, name: &'a str) -> XHanaDCTable {
+pub fn add_xhanadc<'a>(conn: &PgConnection, dcid: &'a i32, name: &'a str) -> XHanaDCTable {
     
     use schema::xhanadatacenter;
 
     let new_xhd = XHanaDCInsert {
-        id: id,
+        dcid: dcid,
         name: name,
     };
 
     diesel::insert_into(xhanadatacenter::table)
         .values(&new_xhd)
-        .on_conflict(xhanadatacenter::id)
+        .on_conflict(xhanadatacenter::dcid)
         .do_update()
         .set(&new_xhd)
         .get_result(conn)

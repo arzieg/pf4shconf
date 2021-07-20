@@ -49,10 +49,10 @@ CREATE TABLE xHANAARC (
 -- xHANA Versionstablle
 -- Key: SID, VERSION
 CREATE TABLE xHANAVERSION (
-  id SERIAL PRIMARY KEY,
   sid VARCHAR NOT NULL,
   version VARCHAR NOT NULL,
-  tag VARCHAR
+  tag VARCHAR,
+  primary key(sid, version)
 );
 
 -- xHANAPARAMETER
@@ -62,7 +62,7 @@ CREATE TABLE xHANAPARAMETER (
   version VARCHAR NOT NULL,
   parameter VARCHAR NOT NULL,
   info VARCHAR,
-  typ VARCHAR NOT NULL,
+  valuetype VARCHAR NOT NULL,
   mandatory CHAR, 
   primary key(version, parameter)
 );
@@ -71,24 +71,24 @@ CREATE TABLE xHANAPARAMETER (
 -- xHANADATACENTER
 -- Datacenter IDs
 CREATE TABLE xHANADATACENTER (
-  id INTEGER NOT NULL,
+  dcid INTEGER NOT NULL,
   name VARCHAR NOT NULL,
-  primary key(id)
+  primary key(dcid)
 );
 
 -- xHOST
 -- HOST Informationen
 CREATE TABLE xHOST (
-  id SERIAL PRIMARY KEY,
   hostid VARCHAR NOT NULL,
   version VARCHAR NOT NULL, 
-  dc INTEGER,
+  dcid INTEGER,
   hostname VARCHAR,
   parameter VARCHAR, 
   value VARCHAR,
-  CONSTRAINT fk_dc
-    FOREIGN KEY(dc) 
-	    REFERENCES xHANADATACENTER(id)
+  primary key(hostid, parameter),
+  CONSTRAINT fk_dcid
+    FOREIGN KEY(dcid) 
+	    REFERENCES xHANADATACENTER(dcid)
 --  CONSTRAINT fk_parameter
 --    FOREIGN KEY(parameter) 
 --	    REFERENCES xHANAPARAMETER(id)
@@ -97,8 +97,27 @@ CREATE TABLE xHOST (
 -- xSID_HOST
 -- Mapping SID to HOST
 CREATE TABLE xSID_HOST (
-  id SERIAL PRIMARY KEY,
   sid VARCHAR NOT NULL, 
   hostid VARCHAR NOT NULL, 
-  version VARCHAR NOT NULL
+  version VARCHAR NOT NULL,
+  primary key(sid,hostid,version)
+);
+
+-- xHANAGENERAL
+-- allg. Parameter
+CREATE TABLE xHANAGENERAL (
+  version VARCHAR NOT NULL,
+  parameter VARCHAR NOT NULL,
+  value VARCHAR NOT NULL,
+  primary key(version, parameter)
+);
+
+-- xSID
+-- Parameter specific to SID
+CREATE TABLE xSID (
+  sid VARCHAR NOT NULL, 
+  version VARCHAR NOT NULL,
+  parameter VARCHAR NOT NULL,
+  value VARCHAR NOT NULL,
+  primary key(sid, version, parameter)
 );

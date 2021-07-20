@@ -6,8 +6,8 @@ table! {
 }
 
 table! {
-    xhanadatacenter (id) {
-        id -> Int4,
+    xhanadatacenter (dcid) {
+        dcid -> Int4,
         name -> Varchar,
     }
 }
@@ -24,12 +24,10 @@ table! {
 }
 
 table! {
-    xhanageneral (id) {
-        id -> Int4,
-        sid -> Varchar,
+    xhanageneral (version, parameter) {
         version -> Varchar,
         parameter -> Varchar,
-        value -> Nullable<Varchar>,
+        value -> Varchar,
     }
 }
 
@@ -38,14 +36,13 @@ table! {
         version -> Varchar,
         parameter -> Varchar,
         info -> Nullable<Varchar>,
-        typ -> Varchar,
+        valuetype -> Varchar,
         mandatory -> Nullable<Bpchar>,
     }
 }
 
 table! {
-    xhanaversion (id) {
-        id -> Int4,
+    xhanaversion (sid, version) {
         sid -> Varchar,
         version -> Varchar,
         tag -> Nullable<Varchar>,
@@ -53,27 +50,34 @@ table! {
 }
 
 table! {
-    xhost (id) {
-        id -> Int4,
+    xhost (hostid, parameter) {
         hostid -> Varchar,
         version -> Varchar,
-        dc -> Nullable<Int4>,
+        dcid -> Nullable<Int4>,
         hostname -> Nullable<Varchar>,
-        parameter -> Nullable<Varchar>,
+        parameter -> Varchar,
         value -> Nullable<Varchar>,
     }
 }
 
 table! {
-    xsid_host (id) {
-        id -> Int4,
+    xsid (sid, version, parameter) {
+        sid -> Varchar,
+        version -> Varchar,
+        parameter -> Varchar,
+        value -> Varchar,
+    }
+}
+
+table! {
+    xsid_host (sid, hostid, version) {
         sid -> Varchar,
         hostid -> Varchar,
         version -> Varchar,
     }
 }
 
-joinable!(xhost -> xhanadatacenter (dc));
+joinable!(xhost -> xhanadatacenter (dcid));
 
 allow_tables_to_appear_in_same_query!(
     xhanaarc,
@@ -83,5 +87,6 @@ allow_tables_to_appear_in_same_query!(
     xhanaparameter,
     xhanaversion,
     xhost,
+    xsid,
     xsid_host,
 );
