@@ -50,12 +50,13 @@ table! {
 }
 
 table! {
-    xhost (hostid, parameter) {
+    xhost (id) {
+        id -> Int4,
         hostid -> Varchar,
         version -> Varchar,
         dcid -> Nullable<Int4>,
         hostname -> Nullable<Varchar>,
-        parameter -> Varchar,
+        parameter -> Nullable<Varchar>,
         value -> Nullable<Varchar>,
     }
 }
@@ -74,10 +75,15 @@ table! {
         sid -> Varchar,
         hostid -> Varchar,
         version -> Varchar,
+        id -> Int4,
     }
 }
 
+joinable!(xhanaversion -> xhanaarc (sid));
 joinable!(xhost -> xhanadatacenter (dcid));
+joinable!(xsid -> xhanaarc (sid));
+joinable!(xsid_host -> xhanaarc (sid));
+joinable!(xsid_host -> xhost (id));
 
 allow_tables_to_appear_in_same_query!(
     xhanaarc,

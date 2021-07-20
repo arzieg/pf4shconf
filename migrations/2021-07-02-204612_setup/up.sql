@@ -24,6 +24,24 @@
 --  value VARCHAR
 --);
 
+-- xHANAARC
+-- Architekturtyp je SID
+-- Key: SID
+CREATE TABLE xHANAARC (
+  sid VARCHAR NOT NULL PRIMARY KEY UNIQUE,
+  arc VARCHAR NOT NULL
+);
+ 
+-- xHANAVERSION
+-- xHANA Versionstablle
+-- Key: SID, VERSION
+CREATE TABLE xHANAVERSION (
+  sid VARCHAR NOT NULL REFERENCES xHANAARC, 
+  version VARCHAR NOT NULL,
+  tag VARCHAR,
+  primary key(sid, version)
+);
+
 -- XHANAENVIRONMENT
 -- maschinenspezifische Parameter für die Umgebung
 --  Key: SID, VERSION
@@ -36,24 +54,8 @@ CREATE TABLE xHANAENVIRONMENT (
   value VARCHAR
 );
 
--- xHANAARC
--- Architekturtyp je SID
--- Key: SID
-CREATE TABLE xHANAARC (
-  sid VARCHAR NOT NULL,
-  arc VARCHAR NOT NULL,
-  primary key(sid)
-);
- 
--- xHANAVERSION
--- xHANA Versionstablle
--- Key: SID, VERSION
-CREATE TABLE xHANAVERSION (
-  sid VARCHAR NOT NULL,
-  version VARCHAR NOT NULL,
-  tag VARCHAR,
-  primary key(sid, version)
-);
+
+
 
 -- xHANAPARAMETER
 -- xHANA Parametertabelle. In dieser Tabelle stehen die auszufüllenden Parameter und ob diese
@@ -71,35 +73,33 @@ CREATE TABLE xHANAPARAMETER (
 -- xHANADATACENTER
 -- Datacenter IDs
 CREATE TABLE xHANADATACENTER (
-  dcid INTEGER NOT NULL,
-  name VARCHAR NOT NULL,
-  primary key(dcid)
+  dcid INTEGER NOT NULL PRIMARY KEY UNIQUE,
+  name VARCHAR NOT NULL
 );
 
 -- xHOST
 -- HOST Informationen
 CREATE TABLE xHOST (
+  id SERIAL PRIMARY KEY,
   hostid VARCHAR NOT NULL,
   version VARCHAR NOT NULL, 
-  dcid INTEGER,
+  dcid INTEGER REFERENCES xHANADATACENTER,
   hostname VARCHAR,
   parameter VARCHAR, 
   value VARCHAR,
-  primary key(hostid, parameter),
-  CONSTRAINT fk_dcid
-    FOREIGN KEY(dcid) 
-	    REFERENCES xHANADATACENTER(dcid)
---  CONSTRAINT fk_parameter
---    FOREIGN KEY(parameter) 
---	    REFERENCES xHANAPARAMETER(id)
+  FOREIGN KEY (version, parameter) REFERENCES xHANAPARAMETER (version, parameter)
+--  CONSTRAINT fk_dcid_xhanadatacenter
+--    FOREIGN KEY(dcid) 
+--	    REFERENCES xHANADATACENTER(dcid)
 );
 
 -- xSID_HOST
 -- Mapping SID to HOST
 CREATE TABLE xSID_HOST (
-  sid VARCHAR NOT NULL, 
+  sid VARCHAR NOT NULL REFERENCES xHANAARC, 
   hostid VARCHAR NOT NULL, 
   version VARCHAR NOT NULL,
+  id INTEGER NOT NULL REFERENCES xHOST,
   primary key(sid,hostid,version)
 );
 
@@ -109,15 +109,17 @@ CREATE TABLE xHANAGENERAL (
   version VARCHAR NOT NULL,
   parameter VARCHAR NOT NULL,
   value VARCHAR NOT NULL,
-  primary key(version, parameter)
+  primary key(version, parameter),
+  FOREIGN KEY (version, parameter) REFERENCES xHANAPARAMETER (version, parameter)
 );
 
 -- xSID
 -- Parameter specific to SID
 CREATE TABLE xSID (
-  sid VARCHAR NOT NULL, 
-  version VARCHAR NOT NULL,
-  parameter VARCHAR NOT NULL,
+  sid VARCHAR NOT NULL REFERENCES xHANAARC,
+  version VARCHAR NOT NULL, 
+  parameter VARCHAR NOT NULL, 
   value VARCHAR NOT NULL,
-  primary key(sid, version, parameter)
+  primary key(sid, version, parameter),
+  FOREIGN KEY (version, parameter) REFERENCES xHANAPARAMETER (version, parameter)
 );
