@@ -36,7 +36,7 @@ table! {
         version -> Varchar,
         parameter -> Varchar,
         info -> Nullable<Varchar>,
-        scope -> Bpchar,
+        scope -> Varchar,
         valuetype -> Varchar,
         mandatory -> Nullable<Bpchar>,
     }

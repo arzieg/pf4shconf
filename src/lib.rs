@@ -65,7 +65,7 @@ pub fn establish_connection() -> PgConnection {
 // Add HANA Parameter 
 // Save dataset in table xhanaparameter
 pub fn add_xhanaparameter<'a>(conn: &PgConnection, version: &'a str, info: &'a str,
-    parameter: &'a str, valuetype: &'a str, mandatory: &'a str) -> XHanaParameterTable {
+    parameter: &'a str, scope: &'a str, valuetype: &'a str, mandatory: &'a str) -> XHanaParameterTable {
     
     use schema::xhanaparameter;
 
@@ -73,6 +73,7 @@ pub fn add_xhanaparameter<'a>(conn: &PgConnection, version: &'a str, info: &'a s
         version: version,
         parameter: parameter,
         info: info,
+        scope: scope,
         valuetype: valuetype,
         mandatory: mandatory,
     };
@@ -138,6 +139,30 @@ pub fn add_xhanadc<'a>(conn: &PgConnection, dcid: &'a i32, name: &'a str) -> XHa
         .on_conflict(xhanadatacenter::dcid)
         .do_update()
         .set(&new_xhd)
+        .get_result(conn)
+        .expect("Error savong new parameter string")
+}
+
+// Add HANA Configurationversion 
+// Save dataset in table xhanadatacenter
+pub fn add_xhanaversion<'a>(conn: &PgConnection, sid: &'a str, version: &'a str, tag: &'a str) -> XHanaVersionTable {
+    
+    use schema::xhanaversion;
+
+    let new_xhv = XHanaVersionInsert {
+        sid: sid,
+        version: version,
+        tag: match tag {
+            "EMPTY" => "",
+            _ => tag,
+        },
+    };
+
+    diesel::insert_into(xhanaversion::table)
+        .values(&new_xhv)
+        .on_conflict((xhanaversion::sid, xhanaversion::version))
+        .do_update()
+        .set(&new_xhv)
         .get_result(conn)
         .expect("Error savong new parameter string")
 }

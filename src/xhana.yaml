@@ -47,6 +47,19 @@ subcommands:
                         required: true
                         min_values: 1
                         max_values: 1
+                    - scope:
+                        short: s
+                        long: scope
+                        multiple: false
+                        help: Kind of parameter type
+                        required: true
+                        min_values: 1
+                        max_values: 1
+                        default_value: host
+                        possible_values:
+                            - general
+                            - host
+                            - sap
                     - type:
                         short: t
                         long: type
@@ -112,3 +125,28 @@ subcommands:
                         required: true
                         min_values: 1
                         max_values: 1
+            - version:
+                about: Add and tag configuration version
+                # Subcommand args are exactly like App args
+                args:
+                    - sid:
+                        short: s
+                        long: sid
+                        multiple: false
+                        help: SAP SID
+                        required: true
+                        min_values: 1
+                        max_values: 1
+                    - configversion:
+                        short: c 
+                        long: configversion
+                        help: Version of the configuration
+                        takes_value: true
+                        required: true
+                        min_values: 1
+                        max_values: 1
+                    - tag:
+                        short: t 
+                        long: tag
+                        help: Tag for the configuration
+                        default_value: "EMPTY"

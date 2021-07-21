@@ -1,5 +1,5 @@
-extern crate pf4shconf;
 extern crate diesel;
+extern crate pf4shconf;
 
 use self::pf4shconf::*;
 // use std::io;
@@ -7,7 +7,7 @@ use self::pf4shconf::*;
 use clap::{load_yaml, App};
 
 fn main() {
-//    use pf4shconf::schema::*;
+    //    use pf4shconf::schema::*;
 
     let connection = establish_connection();
 
@@ -15,7 +15,7 @@ fn main() {
 
     let matches = App::from(yaml).get_matches();
 
-   // The most common way to handle subcommands is via a combined approach using
+    // The most common way to handle subcommands is via a combined approach using
     // `ArgMatches::subcommand` which returns a tuple of both the name and matches
     match matches.subcommand() {
         Some(("add", add_matches)) => {
@@ -28,13 +28,26 @@ fn main() {
                     let parameter = parameter_matches.value_of("name").unwrap();
                     let typ = parameter_matches.value_of("type").unwrap();
                     let mandatory = parameter_matches.value_of("mandatory").unwrap();
+                    let scope = parameter_matches.value_of("scope").unwrap();
                     println!("Configversion: {}", configversion);
-                    println!("Info to the technical parameter: {}", info );
+                    println!("Info to the technical parameter: {}", info);
                     println!("Technical Parametername: {}", parameter);
+                    println!("Scope: {}", scope);
                     println!("Type of Parametervalue: {}", typ);
                     println!("Mandatory: {}", mandatory);
-                    add_xhanaparameter(&connection, &configversion, &info, &parameter, &typ, &mandatory);
-                    println!("\nSaved configversion {}, info {}, parameter {}, typ {}, mandatory {}", configversion, info, parameter, typ, mandatory);
+                    add_xhanaparameter(
+                        &connection,
+                        &configversion,
+                        &info,
+                        &parameter,
+                        &scope,
+                        &typ,
+                        &mandatory,
+                    );
+                    println!(
+                        "\nSaved configversion {}, info {}, parameter {}, typ {}, mandatory {}",
+                        configversion, info, parameter, typ, mandatory
+                    );
                     //query_hanaparameter(&connection, &configversion);
                 }
                 Some(("architecture", parameter_matches)) => {
@@ -42,8 +55,8 @@ fn main() {
                     let sid = parameter_matches.value_of("sid").unwrap();
                     let arctype = parameter_matches.value_of("arctype").unwrap();
                     println!("SID: {}", sid);
-                    println!("Arctype: {}", arctype );
-                    add_xhanaarc(&connection , &sid, &arctype);
+                    println!("Arctype: {}", arctype);
+                    add_xhanaarc(&connection, &sid, &arctype);
                 }
                 Some(("datacenter", parameter_matches)) => {
                     // Now we have a reference to remote's matches
@@ -51,8 +64,18 @@ fn main() {
                     let name = parameter_matches.value_of("dcname").unwrap();
                     let id: i32 = id_str.parse().expect("Error: ID is not a integer");
                     println!("ID: {}", id);
-                    println!("Name: {}", name );
+                    println!("Name: {}", name);
                     add_xhanadc(&connection, &id, &name);
+                }
+                Some(("version", parameter_matches)) => {
+                    // Now we have a reference to remote's matches
+                    let sid = parameter_matches.value_of("sid").unwrap();
+                    let configversion = parameter_matches.value_of("configversion").unwrap();
+                    let tag = parameter_matches.value_of("tag").unwrap();
+                    println!("SID: {}", sid);
+                    println!("Configversion: {}", configversion);
+                    println!("Tag: {}", tag);
+                    add_xhanaversion(&connection, &sid, &configversion, &tag);
                 }
                 Some(("local", _)) => {
                     println!("'git push local' was used");
@@ -60,19 +83,14 @@ fn main() {
                 _ => unreachable!(),
             }
         }
-        
         None => println!("No subcommand was used"), // If no subcommand was used it'll match the tuple ("", None)
         _ => unreachable!(), // If all subcommands are defined above, anything else is unreachabe!()
     }
-    
 
-    
     //println!("Value: ");
     //let mut value = String::new();
     //io::stdin().read_line(&mut value).unwrap();
     //let value = &value[..(value.len() - 1)];
 
     //let xhg = create_xhanageneral(&connection, &sid, &version, &parameter, &value);
-    
-
 }
