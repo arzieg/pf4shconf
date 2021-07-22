@@ -65,7 +65,7 @@ pub fn establish_connection() -> PgConnection {
 // Add HANA Parameter 
 // Save dataset in table xhanaparameter
 pub fn add_xhanaparameter<'a>(conn: &PgConnection, version: &'a str, info: &'a str,
-    parameter: &'a str, scope: &'a str, valuetype: &'a str, mandatory: &'a str) -> XHanaParameterTable {
+    parameter: &'a str, scope: &'a str, iotype: &'a str, valuetype: &'a str, mandatory: &'a str) -> XHanaParameterTable {
     
     use schema::xhanaparameter;
 
@@ -74,6 +74,7 @@ pub fn add_xhanaparameter<'a>(conn: &PgConnection, version: &'a str, info: &'a s
         parameter: parameter,
         info: info,
         scope: scope,
+        iotype: iotype,
         valuetype: valuetype,
         mandatory: mandatory,
     };

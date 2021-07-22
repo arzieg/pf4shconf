@@ -29,10 +29,12 @@ fn main() {
                     let typ = parameter_matches.value_of("type").unwrap();
                     let mandatory = parameter_matches.value_of("mandatory").unwrap();
                     let scope = parameter_matches.value_of("scope").unwrap();
+                    let iotype = parameter_matches.value_of("iotype").unwrap();
                     println!("Configversion: {}", configversion);
                     println!("Info to the technical parameter: {}", info);
                     println!("Technical Parametername: {}", parameter);
                     println!("Scope: {}", scope);
+                    println!("IOType: {}", iotype);
                     println!("Type of Parametervalue: {}", typ);
                     println!("Mandatory: {}", mandatory);
                     add_xhanaparameter(
@@ -41,6 +43,7 @@ fn main() {
                         &info,
                         &parameter,
                         &scope,
+                        &iotype,
                         &typ,
                         &mandatory,
                     );
@@ -77,9 +80,7 @@ fn main() {
                     println!("Tag: {}", tag);
                     add_xhanaversion(&connection, &sid, &configversion, &tag);
                 }
-                Some(("local", _)) => {
-                    println!("'git push local' was used");
-                }
+                None => println!("No subcommand was used"),
                 _ => unreachable!(),
             }
         }

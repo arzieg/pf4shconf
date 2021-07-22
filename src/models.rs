@@ -29,6 +29,7 @@ pub struct XHanaParameterInsert<'a> {
     pub parameter: &'a str,
     pub info: &'a str,
     pub scope: &'a str,
+    pub iotype: &'a str,
     pub valuetype: &'a str,
     pub mandatory: &'a str,
 }
@@ -61,6 +62,7 @@ pub struct XHanaParameterTable {
     pub parameter: String,
     pub info: Option<String>,
     pub scope: String,
+    pub iotype: String,
     pub valuetype: String,
     pub mandatory: Option<String>,
 }

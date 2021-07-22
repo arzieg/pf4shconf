@@ -60,6 +60,19 @@ subcommands:
                             - general
                             - host
                             - sap
+                    - iotype:
+                        short: o
+                        long: iotype
+                        multiple: false
+                        help: Input, Output or both type
+                        required: true
+                        min_values: 1
+                        max_values: 1
+                        default_value: both
+                        possible_values:
+                            - input
+                            - output
+                            - both
                     - type:
                         short: t
                         long: type
@@ -150,3 +163,16 @@ subcommands:
                         long: tag
                         help: Tag for the configuration
                         default_value: "EMPTY"
+            - items:
+                about: Load parameter value file  
+                # Subcommand args are exactly like App args
+                args:
+                    - file:
+                        short: f
+                        long: file
+                        multiple: false
+                        help: Parameter value file
+                        required: true
+                        min_values: 1
+                        max_values: 1
+

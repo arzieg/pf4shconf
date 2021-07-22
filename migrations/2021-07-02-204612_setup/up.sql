@@ -65,6 +65,7 @@ CREATE TABLE xHANAPARAMETER (
   parameter VARCHAR NOT NULL,
   info VARCHAR,
   scope VARCHAR NOT NULL,
+  iotype VARCHAR NOT NULL,
   valuetype VARCHAR NOT NULL,
   mandatory CHAR, 
   primary key(version, parameter)
