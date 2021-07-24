@@ -28,6 +28,7 @@ fn main() {
                     let parameter = parameter_matches.value_of("name").unwrap();
                     let typ = parameter_matches.value_of("type").unwrap();
                     let mandatory = parameter_matches.value_of("mandatory").unwrap();
+                    let mandatory = mandatory.trim_end();
                     let scope = parameter_matches.value_of("scope").unwrap();
                     let iotype = parameter_matches.value_of("iotype").unwrap();
                     println!("Configversion: {}", configversion);
@@ -79,6 +80,12 @@ fn main() {
                     println!("Configversion: {}", configversion);
                     println!("Tag: {}", tag);
                     add_xhanaversion(&connection, &sid, &configversion, &tag);
+                }
+                Some(("items", parameter_matches)) => {
+                    // Now we have a reference to remote's matches
+                    let file = parameter_matches.value_of("file").unwrap();
+                    println!("File: {}", file);
+                    // add_xhanaversion(&connection, &sid, &configversion, &tag);
                 }
                 None => println!("No subcommand was used"),
                 _ => unreachable!(),
