@@ -81,10 +81,12 @@ fn main() {
                     println!("Tag: {}", tag);
                     add_xhanaversion(&connection, &sid, &configversion, &tag);
                 }
-                Some(("items", parameter_matches)) => {
+                Some(("model", parameter_matches)) => {
                     // Now we have a reference to remote's matches
+                    
                     let file = parameter_matches.value_of("file").unwrap();
                     println!("File: {}", file);
+                    add_xhanamodel(&connection, &file);
                     // add_xhanaversion(&connection, &sid, &configversion, &tag);
                 }
                 None => println!("No subcommand was used"),

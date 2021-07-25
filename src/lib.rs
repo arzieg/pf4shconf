@@ -2,15 +2,23 @@
 pub mod models;
 pub mod schema;
 
+extern crate csv;
+extern crate serde;
+
 #[macro_use]
 extern crate diesel;
 extern crate dotenv;
+//extern crate serde_derive;
 
 use self::models::*;
 use diesel::pg::PgConnection;
 use diesel::prelude::*;
 use dotenv::dotenv;
 use std::env;
+
+use std::error::Error;
+// use std::ffi::OsString;
+// use std::process;
 
 pub fn establish_connection() -> PgConnection {
     dotenv().ok();
@@ -62,11 +70,18 @@ pub fn establish_connection() -> PgConnection {
     }
 } */
 
-// Add HANA Parameter 
+// Add HANA Parameter
 // Save dataset in table xhanaparameter
-pub fn add_xhanaparameter<'a>(conn: &PgConnection, version: &'a str, info: &'a str,
-    parameter: &'a str, scope: &'a str, iotype: &'a str, valuetype: &'a str, mandatory: &'a str) -> XHanaParameterTable {
-    
+pub fn add_xhanaparameter<'a>(
+    conn: &PgConnection,
+    version: &'a str,
+    info: &'a str,
+    parameter: &'a str,
+    scope: &'a str,
+    iotype: &'a str,
+    valuetype: &'a str,
+    mandatory: &'a str,
+) -> XHanaParameterTable {
     use schema::xhanaparameter;
 
     let new_xhp = XHanaParameterInsert {
@@ -80,7 +95,6 @@ pub fn add_xhanaparameter<'a>(conn: &PgConnection, version: &'a str, info: &'a s
     };
 
     // check if version, parameter are already set
-    
 
     diesel::insert_into(xhanaparameter::table)
         .values(&new_xhp)
@@ -91,7 +105,7 @@ pub fn add_xhanaparameter<'a>(conn: &PgConnection, version: &'a str, info: &'a s
         .expect("Error savong new parameter string")
 }
 
-pub fn query_hanaparameter<'a>(conn: &PgConnection, pversion: &str, pparameter: &str)  {
+pub fn query_hanaparameter<'a>(conn: &PgConnection, pversion: &str, pparameter: &str) {
     use schema::xhanaparameter::dsl::*;
 
     println!("VERSION = {}", &pversion);
@@ -101,19 +115,14 @@ pub fn query_hanaparameter<'a>(conn: &PgConnection, pversion: &str, pparameter: 
         .filter(version.eq(&pparameter))
         .get_results::<XHanaParameterTable>(conn)
         .expect("Error loading parameters");
-
 }
 
-// Add HANA Architecture 
+// Add HANA Architecture
 // Save dataset in table xhanaarc
 pub fn add_xhanaarc<'a>(conn: &PgConnection, sid: &'a str, arc: &'a str) -> XHanaArcTable {
-    
     use schema::xhanaarc;
 
-    let new_xha = XHanaArcInsert {
-        sid: sid,
-        arc: arc,
-    };
+    let new_xha = XHanaArcInsert { sid: sid, arc: arc };
 
     diesel::insert_into(xhanaarc::table)
         .values(&new_xha)
@@ -124,10 +133,9 @@ pub fn add_xhanaarc<'a>(conn: &PgConnection, sid: &'a str, arc: &'a str) -> XHan
         .expect("Error savong new parameter string")
 }
 
-// Add HANA Datacenter 
+// Add HANA Datacenter
 // Save dataset in table xhanadatacenter
 pub fn add_xhanadc<'a>(conn: &PgConnection, dcid: &'a i32, name: &'a str) -> XHanaDCTable {
-    
     use schema::xhanadatacenter;
 
     let new_xhd = XHanaDCInsert {
@@ -144,10 +152,14 @@ pub fn add_xhanadc<'a>(conn: &PgConnection, dcid: &'a i32, name: &'a str) -> XHa
         .expect("Error savong new parameter string")
 }
 
-// Add HANA Configurationversion 
+// Add HANA Configurationversion
 // Save dataset in table xhanadatacenter
-pub fn add_xhanaversion<'a>(conn: &PgConnection, sid: &'a str, version: &'a str, tag: &'a str) -> XHanaVersionTable {
-    
+pub fn add_xhanaversion<'a>(
+    conn: &PgConnection,
+    sid: &'a str,
+    version: &'a str,
+    tag: &'a str,
+) -> XHanaVersionTable {
     use schema::xhanaversion;
 
     let new_xhv = XHanaVersionInsert {
@@ -166,4 +178,27 @@ pub fn add_xhanaversion<'a>(conn: &PgConnection, sid: &'a str, version: &'a str,
         .set(&new_xhv)
         .get_result(conn)
         .expect("Error savong new parameter string")
+}
+
+#[macro_use]
+extern crate serde_derive;
+#[derive(Debug, Deserialize)]
+struct Model {
+    parameter: String,
+    value: String,
+}
+
+pub fn add_xhanamodel<'a>(conn: &PgConnection, file: &'a str) -> Result<(), Box<dyn Error>> {
+    let mut rdr = csv::ReaderBuilder::new()
+        .has_headers(false)
+        .delimiter(b'=')
+        .comment(Some(b'#'))
+        .from_path(file)?;
+
+    for result in rdr.deserialize() {
+        let record: Model = result?;
+        println!("Parameter: {} -- Value: {}", record.parameter, record.value);
+        // println!("{:?}",record);
+    }
+    Ok(())
 }

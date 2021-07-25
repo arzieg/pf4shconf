@@ -163,8 +163,8 @@ subcommands:
                         long: tag
                         help: Tag for the configuration
                         default_value: "EMPTY"
-            - items:
-                about: Load parameter value file  
+            - model:
+                about: Load model value file  
                 # Subcommand args are exactly like App args
                 args:
                     - file:
@@ -175,4 +175,3 @@ subcommands:
                         required: true
                         min_values: 1
                         max_values: 1
-
