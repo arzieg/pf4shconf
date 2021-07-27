@@ -20,6 +20,12 @@ use std::error::Error;
 // use std::ffi::OsString;
 // use std::process;
 
+// Allgemeine Funktionen
+// https://stackoverflow.com/questions/57063777/remove-all-whitespace-from-string
+fn remove_whitespace(s: String) -> String {
+    s.chars().filter(|c| !c.is_whitespace()).collect()
+}
+
 pub fn establish_connection() -> PgConnection {
     dotenv().ok();
 
@@ -188,17 +194,35 @@ struct Model {
     value: String,
 }
 
+
 pub fn add_xhanamodel<'a>(conn: &PgConnection, file: &'a str) -> Result<(), Box<dyn Error>> {
+
+    use schema::xhanaparameter::dsl::*;
+
     let mut rdr = csv::ReaderBuilder::new()
         .has_headers(false)
         .delimiter(b'=')
         .comment(Some(b'#'))
         .from_path(file)?;
 
+    let pversion = "1.0";
+    // check if all parameters are defined
     for result in rdr.deserialize() {
         let record: Model = result?;
-        println!("Parameter: {} -- Value: {}", record.parameter, record.value);
-        // println!("{:?}",record);
+        let pparameter: String = remove_whitespace(record.parameter);
+        let value: String = remove_whitespace(record.value);
+        print!("Check Parameter {} in Version {}: ", pparameter, pversion);
+        
+        xhanaparameter
+        .filter(version.eq(&pversion))
+        .filter(parameter.eq(&pparameter))
+        .get_result::<XHanaParameterTable>(conn)
+        .expect(&format!("\nDid not found Parameter {} in Version {} - Could not implement model!\n",
+             pparameter, 
+             pversion));
+        //println!("DEBUG {:?}", xhp.parameter);
+        println!("");
+
     }
     Ok(())
 }
