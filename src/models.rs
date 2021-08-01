@@ -14,9 +14,9 @@ pub struct XHanaSidVersionStruct {
     pub version: String,
 }
 
-#[derive(Insertable)]
+#[derive(Insertable,AsChangeset)]
 #[table_name="xhanageneral"]
-pub struct NewXHanaGeneral<'a> {
+pub struct XHanaGeneralInsert<'a> {
     pub version: &'a str,
     pub parameter: &'a str,
     pub value: &'a str,
@@ -84,4 +84,11 @@ pub struct XHanaVersionTable {
     pub sid: String,
     pub version: String,
     pub tag: Option<String>,
+}
+
+#[derive(Queryable)]
+pub struct XHanaGeneralTable {
+    pub version: String,
+    pub parameter: String,
+    pub value: String,
 }

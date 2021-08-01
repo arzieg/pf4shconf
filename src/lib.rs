@@ -183,7 +183,33 @@ pub fn add_xhanaversion<'a>(
         .do_update()
         .set(&new_xhv)
         .get_result(conn)
-        .expect("Error savong new parameter string")
+        .expect("Error saving new parameter string")
+}
+
+// Add general Parameter
+// Save dataset in table xhanageneral
+pub fn add_xhanageneral<'a>(
+    conn: &PgConnection, 
+    version: &'a str, 
+    parameter: &'a str, 
+    value: &'a str,) -> XHanaGeneralTable {
+
+    use schema::xhanageneral;
+
+    let new_xhg = XHanaGeneralInsert {
+        version: version,
+        parameter: parameter,
+        value: value,
+    };
+
+    diesel::insert_into(xhanageneral::table)
+        .values(&new_xhg)
+        .on_conflict((xhanageneral::version, xhanageneral::parameter))
+        .do_update()
+        .set(&new_xhg)
+        .get_result(conn)
+        .expect("Error saving new parameter string")
+
 }
 
 #[macro_use]
@@ -193,7 +219,6 @@ struct Model {
     parameter: String,
     value: String,
 }
-
 
 pub fn add_xhanamodel<'a>(conn: &PgConnection, file: &'a str) -> Result<(), Box<dyn Error>> {
 
@@ -205,24 +230,50 @@ pub fn add_xhanamodel<'a>(conn: &PgConnection, file: &'a str) -> Result<(), Box<
         .comment(Some(b'#'))
         .from_path(file)?;
 
+    // nur für den Test
     let pversion = "1.0";
     // check if all parameters are defined
     for result in rdr.deserialize() {
         let record: Model = result?;
         let pparameter: String = remove_whitespace(record.parameter);
-        let value: String = remove_whitespace(record.value);
         print!("Check Parameter {} in Version {}: ", pparameter, pversion);
-        
+              
         xhanaparameter
         .filter(version.eq(&pversion))
         .filter(parameter.eq(&pparameter))
+        .filter(iotype.eq("input").or(iotype.eq("both")))
         .get_result::<XHanaParameterTable>(conn)
-        .expect(&format!("\nDid not found Parameter {} in Version {} - Could not implement model!\n",
+        .expect(&format!("\nDid not found Parameter {} in Version {} - Could not load model!\n",
              pparameter, 
              pversion));
         //println!("DEBUG {:?}", xhp.parameter);
         println!("");
-
     }
-    Ok(())
+    
+    // also hier sind alle Parameter definiert in xhanaparameter. Nun kann das Modell geladen
+    // werden
+    let mut rdr = csv::ReaderBuilder::new()
+        .has_headers(false)
+        .delimiter(b'=')
+        .comment(Some(b'#'))
+        .from_path(file)?;
+
+    for result in rdr.deserialize() {
+        let record: Model = result?;
+        let pparameter: String = remove_whitespace(record.parameter);
+        let pvalue: String = remove_whitespace(record.value);
+        println!("Parameter: {}, Value:{}", pparameter, pvalue);
+        
+        // fill xhanageneral
+        add_xhanageneral(&conn, pversion, &pparameter, &pvalue);   
+        println!("Insert Version {}, Parameter {}, Value {}: ", pversion, pparameter, pvalue);
+    }
+    
+    // ToDo
+    // Werte für Tabelle 
+    // xhanahost +
+    // xhanasid einfügen
+
+
+    Ok(())        
 }
