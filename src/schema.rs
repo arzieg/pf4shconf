@@ -1,6 +1,43 @@
 table! {
-    xhanaarc (sid) {
+    xhana_host_para (hostname, parameterversion, parameter, arc) {
+        hostname -> Varchar,
+        parameterversion -> Varchar,
+        dcid -> Nullable<Int4>,
+        arc -> Varchar,
+        parameter -> Varchar,
+        value -> Nullable<Varchar>,
+    }
+}
+
+table! {
+    xhana_sid_host (solutionversion, sid, hostname) {
+        solutionversion -> Varchar,
         sid -> Varchar,
+        hostname -> Varchar,
+    }
+}
+
+table! {
+    xhana_sid_para (sid, parameterversion, parameter, arc) {
+        sid -> Varchar,
+        parameterversion -> Varchar,
+        parameter -> Varchar,
+        value -> Varchar,
+        arc -> Varchar,
+    }
+}
+
+table! {
+    xhana_solution_sid (sid) {
+        solutionversion -> Varchar,
+        sid -> Varchar,
+        arc -> Varchar,
+        tag -> Nullable<Varchar>,
+    }
+}
+
+table! {
+    xhanaarc (arc) {
         arc -> Varchar,
     }
 }
@@ -13,30 +50,28 @@ table! {
 }
 
 table! {
-    xhanaenvironment (id) {
-        id -> Int4,
+    xhanageneral (parameterversion, parameter, solutionversion) {
+        parameterversion -> Varchar,
+        parameter -> Varchar,
+        solutionversion -> Varchar,
         sid -> Varchar,
-        version -> Varchar,
-        hostname -> Varchar,
-        parameter -> Varchar,
-        value -> Nullable<Varchar>,
-    }
-}
-
-table! {
-    xhanageneral (version, parameter) {
-        version -> Varchar,
-        parameter -> Varchar,
         value -> Varchar,
+        arc -> Varchar,
     }
 }
 
 table! {
-    xhanaparameter (version, parameter) {
-        version -> Varchar,
+    xhanahost (hostname) {
+        hostname -> Varchar,
+    }
+}
+
+table! {
+    xhanaparameter (parameterversion, parameter, arc) {
+        parameterversion -> Varchar,
         parameter -> Varchar,
         info -> Nullable<Varchar>,
-        scope -> Varchar,
+        arc -> Varchar,
         iotype -> Varchar,
         valuetype -> Varchar,
         mandatory -> Nullable<Bpchar>,
@@ -44,57 +79,39 @@ table! {
 }
 
 table! {
-    xhanaversion (sid, version) {
+    xhanasid (sid) {
         sid -> Varchar,
-        version -> Varchar,
-        tag -> Nullable<Varchar>,
+        name -> Nullable<Varchar>,
     }
 }
 
 table! {
-    xhost (id) {
-        id -> Int4,
-        hostid -> Varchar,
-        version -> Varchar,
-        dcid -> Nullable<Int4>,
-        hostname -> Nullable<Varchar>,
-        parameter -> Nullable<Varchar>,
-        value -> Nullable<Varchar>,
+    xhanasolution (solutionversion) {
+        solutionversion -> Varchar,
     }
 }
 
-table! {
-    xsid (sid, version, parameter) {
-        sid -> Varchar,
-        version -> Varchar,
-        parameter -> Varchar,
-        value -> Varchar,
-    }
-}
-
-table! {
-    xsid_host (sid, hostid, version) {
-        sid -> Varchar,
-        hostid -> Varchar,
-        version -> Varchar,
-        id -> Int4,
-    }
-}
-
-joinable!(xhanaversion -> xhanaarc (sid));
-joinable!(xhost -> xhanadatacenter (dcid));
-joinable!(xsid -> xhanaarc (sid));
-joinable!(xsid_host -> xhanaarc (sid));
-joinable!(xsid_host -> xhost (id));
+joinable!(xhana_host_para -> xhanadatacenter (dcid));
+joinable!(xhana_host_para -> xhanahost (hostname));
+joinable!(xhana_sid_host -> xhanahost (hostname));
+joinable!(xhana_sid_host -> xhanasid (sid));
+joinable!(xhana_sid_host -> xhanasolution (solutionversion));
+joinable!(xhana_sid_para -> xhanasid (sid));
+joinable!(xhana_solution_sid -> xhanaarc (arc));
+joinable!(xhana_solution_sid -> xhanasolution (solutionversion));
+joinable!(xhanageneral -> xhanasolution (solutionversion));
+joinable!(xhanaparameter -> xhanaarc (arc));
 
 allow_tables_to_appear_in_same_query!(
+    xhana_host_para,
+    xhana_sid_host,
+    xhana_sid_para,
+    xhana_solution_sid,
     xhanaarc,
     xhanadatacenter,
-    xhanaenvironment,
     xhanageneral,
+    xhanahost,
     xhanaparameter,
-    xhanaversion,
-    xhost,
-    xsid,
-    xsid_host,
+    xhanasid,
+    xhanasolution,
 );
