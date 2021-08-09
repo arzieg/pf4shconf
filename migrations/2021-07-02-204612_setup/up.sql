@@ -25,16 +25,26 @@
 --);
 
 -- xHANAARC
--- Architekturtyp je SID
--- Key: SID
+-- Tabelle der Architekturtypen
+-- Architekturtypen
+--  SO = ScaleOut
+--  SOR = ScaleOurReplication
+--  SUR = ScaleUpReplication
+--  SU = ScaleUp
+--  ISCSI = iscsi Server
+--  MajoritzMaker = MajorityMaker
+--  Toolserver = Toolserver
+--  NetApp = NetApp
 CREATE TABLE xHANAARC (
   arc VARCHAR NOT NULL PRIMARY KEY
 );
-
+-- Tabelle der HANA Lösungen. Dies ist ein Freitextfeld
 CREATE TABLE xHANASOLUTION (
   solutionversion VARCHAR NOT NULL PRIMARY KEY
 );
 
+-- Tabelle der SIDs (hierzu gehören z.B. auch ISCSI-Systeme und nicht nur SAP Systeme) + 
+-- Freitext als Beschreibung
 CREATE TABLE xHANASID (
   sid VARCHAR NOT NULL PRIMARY KEY,
   name VARCHAR
@@ -47,14 +57,21 @@ CREATE TABLE xHANADATACENTER (
   name VARCHAR NOT NULL
 );
 
+-- Tabelle der Hostnamen
 CREATE TABLE xHANAHOST (
   hostname VARCHAR NOT NULL PRIMARY KEY UNIQUE
 );
 
 
 -- xHANAPARAMETER
--- xHANA Parametertabelle. In dieser Tabelle stehen die auszufüllenden Parameter und ob diese
--- Mandatory oder Optional sind.
+-- xHANA Parametertabelle. In dieser Tabelle stehen die auszufüllenden Parametertemplates.
+--   parameterversion = Version des Parametertemplates
+--   parameter = Parametertemplate
+--   info = Erklärungstext zum Parameter
+--   arc = Architektur
+--   iotype = input / output / both?
+--   valuetype = erwarteter Wert (wird aktuell nicht abgefragt)
+--   mandatory = (J)a / (N)ein
 CREATE TABLE xHANAPARAMETER (
   parameterversion VARCHAR NOT NULL,
   parameter VARCHAR NOT NULL,
@@ -66,8 +83,7 @@ CREATE TABLE xHANAPARAMETER (
   primary key(parameterversion, parameter, arc)
 );
  
--- xSID
--- Parameter specific to SID
+-- Verbindungstabelle SID zu Parametern
 CREATE TABLE xHANA_SID_PARA (
   sid VARCHAR NOT NULL REFERENCES xHANASID,
   parameterversion VARCHAR NOT NULL, 
@@ -78,9 +94,11 @@ CREATE TABLE xHANA_SID_PARA (
   FOREIGN KEY (parameterversion, parameter, arc) REFERENCES xHANAPARAMETER (parameterversion, parameter, arc)
 );
 
--- xHANAVERSION
--- xHANA Versionstablle
--- Key: SID, VERSION
+-- Verbindungstabelle Solution zu SID
+--  Solutionversion 
+--  SID
+--  Architekturtyp
+--  Tag (Freitextfeld)
 CREATE TABLE xHANA_SOLUTION_SID (
   solutionversion VARCHAR NOT NULL REFERENCES xHANASOLUTION, 
   sid VARCHAR NOT NULL,
@@ -89,8 +107,7 @@ CREATE TABLE xHANA_SOLUTION_SID (
   primary key (sid)
 );
 
--- xSID_HOST
--- Mapping SID to HOST
+-- Mappingtabelle SID zu HOST
 CREATE TABLE xHANA_SID_HOST (
   solutionversion VARCHAR NOT NULL REFERENCES xHANASOLUTION,
   sid VARCHAR NOT NULL REFERENCES xHANASID,
@@ -98,8 +115,7 @@ CREATE TABLE xHANA_SID_HOST (
   primary key(solutionversion, sid, hostname)
 );
 
--- xHOST
--- HOST Informationen
+-- Mappingtabelle Host zu Parametertemplate
 CREATE TABLE xHANA_HOST_PARA (
   hostname VARCHAR NOT NULL REFERENCES xHANAHOST,
   parameterversion VARCHAR NOT NULL, 
