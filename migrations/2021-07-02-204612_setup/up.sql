@@ -76,11 +76,12 @@ CREATE TABLE xHANAPARAMETER (
   parameterversion VARCHAR NOT NULL,
   parameter VARCHAR NOT NULL,
   info VARCHAR,
+  scope VARCHAR NOT NULL,
   arc VARCHAR NOT NULL REFERENCES xHANAARC,
   iotype VARCHAR NOT NULL,
   valuetype VARCHAR NOT NULL,
   mandatory CHAR, 
-  primary key(parameterversion, parameter, arc)
+  primary key(parameterversion, parameter, arc, iotype)
 );
  
 -- Verbindungstabelle SID zu Parametern
@@ -90,8 +91,9 @@ CREATE TABLE xHANA_SID_PARA (
   parameter VARCHAR NOT NULL, 
   value VARCHAR NOT NULL,
   arc VARCHAR NOT NULL,
+  iotype VARCHAR NOT NULL,
   primary key(sid, parameterversion, parameter, arc),
-  FOREIGN KEY (parameterversion, parameter, arc) REFERENCES xHANAPARAMETER (parameterversion, parameter, arc)
+  FOREIGN KEY (parameterversion, parameter, arc, iotype) REFERENCES xHANAPARAMETER (parameterversion, parameter, arc, iotype)
 );
 
 -- Verbindungstabelle Solution zu SID
@@ -122,9 +124,10 @@ CREATE TABLE xHANA_HOST_PARA (
   dcid INTEGER REFERENCES xHANADATACENTER,
   arc VARCHAR NOT NULL,
   parameter VARCHAR, 
+  iotype VARCHAR NOT NULL,
   value VARCHAR,
   PRIMARY KEY (hostname, parameterversion, parameter,arc),
-  FOREIGN KEY (parameterversion, parameter,arc) REFERENCES xHANAPARAMETER (parameterversion, parameter,arc)
+  FOREIGN KEY (parameterversion, parameter,arc, iotype) REFERENCES xHANAPARAMETER (parameterversion, parameter,arc, iotype)
 );
 
 -- xHANAGENERAL
@@ -136,8 +139,9 @@ CREATE TABLE xHANAGENERAL (
   sid VARCHAR NOT NULL,
   value VARCHAR NOT NULL,
   arc VARCHAR NOT NULL,
+  iotype VARCHAR NOT NULL,
   primary key(parameterversion, parameter, solutionversion),
-  FOREIGN KEY (parameterversion, parameter, arc) REFERENCES xHANAPARAMETER (parameterversion, parameter, arc),
+  FOREIGN KEY (parameterversion, parameter, arc, iotype) REFERENCES xHANAPARAMETER (parameterversion, parameter, arc, iotype),
   FOREIGN KEY (solutionversion) REFERENCES xHANASOLUTION (solutionversion)
 );
 

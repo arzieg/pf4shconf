@@ -9,6 +9,7 @@ pub struct XHanaGeneralInsert<'a> {
     pub sid: &'a str,
     pub value: &'a str,
     pub arc: &'a str,
+    pub iotype: &'a str,
 }
 
 #[derive(Insertable,AsChangeset)]
@@ -17,6 +18,7 @@ pub struct XHanaParameterInsert<'a> {
     pub parameterversion: &'a str,
     pub parameter: &'a str,
     pub info: &'a str,
+    pub scope: &'a str,
     pub arc: &'a str,
     pub iotype: &'a str,
     pub valuetype: &'a str,
@@ -79,7 +81,8 @@ pub struct XHanaSIDParaInsert<'a> {
     pub parameterversion: &'a str,
     pub parameter: &'a str,
     pub value: &'a str,
-    pub arc: &'a str, 
+    pub arc: &'a str,
+    pub iotype: &'a str, 
 }
 
 #[derive(Insertable, AsChangeset)]
@@ -90,6 +93,7 @@ pub struct XHanaHostParaInsert<'a> {
     pub dcid: &'a i32,
     pub arc: &'a str,
     pub parameter: &'a str,
+    pub iotype: &'a str,
     pub value: &'a str, 
 }
 
@@ -100,6 +104,7 @@ pub struct XHanaParameterTable {
     pub parameterversion: String,
     pub parameter: String,
     pub info: Option<String>,
+    pub scope: String,
     pub arc: String,
     pub iotype: String,
     pub valuetype: String,
@@ -148,6 +153,7 @@ pub struct XHanaSIDParaTable {
     pub parameter: String,
     pub value: String,
     pub arc: String, 
+    pub iotype: String,
 }
 
 #[derive(Queryable)]
@@ -164,6 +170,7 @@ pub struct XHanaHostParaTable {
     pub dcid: i32,
     pub arc: String,
     pub parameter: Option<String>,
+    pub iotype: String,
     pub value: Option<String>,
 }
 
@@ -175,4 +182,5 @@ pub struct XHanaGeneralTable {
     pub sid: String,
     pub value: Option<String>,    // Option<String> wird hier benötigt, da es ein Nullable - Value in Schema 
     pub arc: String,
+    pub iotype: String,
 }

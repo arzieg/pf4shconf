@@ -5,6 +5,7 @@ table! {
         dcid -> Nullable<Int4>,
         arc -> Varchar,
         parameter -> Varchar,
+        iotype -> Varchar,
         value -> Nullable<Varchar>,
     }
 }
@@ -24,6 +25,7 @@ table! {
         parameter -> Varchar,
         value -> Varchar,
         arc -> Varchar,
+        iotype -> Varchar,
     }
 }
 
@@ -57,6 +59,7 @@ table! {
         sid -> Varchar,
         value -> Varchar,
         arc -> Varchar,
+        iotype -> Varchar,
     }
 }
 
@@ -71,6 +74,7 @@ table! {
         parameterversion -> Varchar,
         parameter -> Varchar,
         info -> Nullable<Varchar>,
+        scope -> Varchar,
         arc -> Varchar,
         iotype -> Varchar,
         valuetype -> Varchar,

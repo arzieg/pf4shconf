@@ -19,13 +19,13 @@ subcommands:
         author: Arne Ziegler@gmx.net
         # Subcommand args are exactly like App args
         subcommands:
-            - parameter:
-                about: Add xHANA Parameter
+            - parametertemplate:
+                about: Add xHANA Parametertemplate
                 # Subcommand args are exactly like App args
                 args:
-                    - configversion:
-                        short: c
-                        long: configversion
+                    - version:
+                        short: v
+                        long: parameterversion
                         multiple: false
                         help: Versionsnumber of the parameter
                         required: true
@@ -41,7 +41,7 @@ subcommands:
                         max_values: 1
                     - name:
                         short: n
-                        long: name
+                        long: parametername
                         multiple: false
                         help: Technical name of the parameter
                         required: true
@@ -60,6 +60,14 @@ subcommands:
                             - general
                             - host
                             - sap
+                    - arctype:
+                        short: a
+                        long: arctype
+                        multiple: false
+                        help: Type of architecture
+                        required: true
+                        min_values: 1
+                        max_values: 1
                     - iotype:
                         short: o
                         long: iotype
@@ -83,6 +91,7 @@ subcommands:
                         default_value: string
                         possible_values:
                             - string
+                            - array
                             - integer
                             - char
                     - mandatory:
@@ -94,22 +103,15 @@ subcommands:
                         possible_values:
                             - y
                             - n
+            # implementiert
             - architecture:
                 about: Add type of architecture
                 # Subcommand args are exactly like App args
                 args:
-                    - sid:
-                        short: s
-                        long: sid
-                        multiple: false
-                        help: SID of target system
-                        required: true
-                        min_values: 1
-                        max_values: 1
                     - arctype:
                         short: a
                         long: arctype
-                        help: Architecturetype - ScaleOutReplicated (SOR), ScaleOut (SO), ScaleUpReplicated (SUR), ScaleUp (SU)
+                        help: Architecturetype - ScaleOutReplicated (SOR), ScaleOut (SO), ScaleUpReplicated (SUR), ScaleUp (SU), MajorityMaker, Toolserver, ISCSI-Server (ISCSI)
                         takes_value: true
                         default_value: SOR
                         required: true
@@ -118,6 +120,12 @@ subcommands:
                             - SOR
                             - SU
                             - SUR
+                            - ISCSI
+                            - MajorityMaker
+                            - NetApp
+                            - Toolserver
+                            - general
+            # implementiert
             - datacenter:
                 about: Add datacenter
                 # Subcommand args are exactly like App args
@@ -138,31 +146,18 @@ subcommands:
                         required: true
                         min_values: 1
                         max_values: 1
-            - version:
-                about: Add and tag configuration version
+            - solution:
+                about: Add Solutionname
                 # Subcommand args are exactly like App args
                 args:
-                    - sid:
-                        short: s
-                        long: sid
-                        multiple: false
-                        help: SAP SID
-                        required: true
-                        min_values: 1
-                        max_values: 1
-                    - configversion:
-                        short: c 
-                        long: configversion
-                        help: Version of the configuration
+                    - name:
+                        short: n
+                        long: name
+                        help: Name of the solution
                         takes_value: true
                         required: true
                         min_values: 1
                         max_values: 1
-                    - tag:
-                        short: t 
-                        long: tag
-                        help: Tag for the configuration
-                        default_value: "EMPTY"
             - model:
                 about: Load model value file  
                 # Subcommand args are exactly like App args

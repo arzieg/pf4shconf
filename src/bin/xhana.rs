@@ -20,10 +20,11 @@ fn main() {
     match matches.subcommand() {
         Some(("add", add_matches)) => {
             // Now we have a reference to push's matches
+            
             match add_matches.subcommand() {
-                Some(("parameter", parameter_matches)) => {
+                Some(("parametertemplate", parameter_matches)) => {
                     // Now we have a reference to remote's matches
-                    let configversion = parameter_matches.value_of("configversion").unwrap();
+                    let version = parameter_matches.value_of("version").unwrap();
                     let info = parameter_matches.value_of("info").unwrap();
                     let parameter = parameter_matches.value_of("name").unwrap();
                     let typ = parameter_matches.value_of("type").unwrap();
@@ -31,36 +32,44 @@ fn main() {
                     let mandatory = mandatory.trim_end();
                     let scope = parameter_matches.value_of("scope").unwrap();
                     let iotype = parameter_matches.value_of("iotype").unwrap();
-                    println!("Configversion: {}", configversion);
+                    let arctype = parameter_matches.value_of("arctype").unwrap();
+                    println!("Version: {}", version);
                     println!("Info to the technical parameter: {}", info);
                     println!("Technical Parametername: {}", parameter);
                     println!("Scope: {}", scope);
+                    println!("Arctype: {}", arctype);
                     println!("IOType: {}", iotype);
                     println!("Type of Parametervalue: {}", typ);
                     println!("Mandatory: {}", mandatory);
                     add_xhanaparameter(
                         &connection,
-                        &configversion,
+                        &version,
                         &info,
                         &parameter,
                         &scope,
+                        &arctype,
                         &iotype,
                         &typ,
                         &mandatory,
-                    );
+                    ); 
                     println!(
-                        "\nSaved configversion {}, info {}, parameter {}, typ {}, mandatory {}",
-                        configversion, info, parameter, typ, mandatory
+                        "\nSaved configversion {}, info {}, parameter {}, arctype {}, typ {}, mandatory {}",
+                        version, info, parameter, arctype, typ, mandatory, 
                     );
                     //query_hanaparameter(&connection, &configversion);
                 }
+                
                 Some(("architecture", parameter_matches)) => {
                     // Now we have a reference to remote's matches
-                    let sid = parameter_matches.value_of("sid").unwrap();
                     let arctype = parameter_matches.value_of("arctype").unwrap();
-                    println!("SID: {}", sid);
                     println!("Arctype: {}", arctype);
-                    add_xhanaarc(&connection, &sid, &arctype);
+                    add_xhanaarc(&connection, &arctype);
+                }
+                Some(("solution", parameter_matches)) => {
+                    // Now we have a reference to remote's matches
+                    let solutionversion = parameter_matches.value_of("name").unwrap();
+                    println!("Solutionversion: {}", solutionversion);
+                    add_xhanasolution(&connection, &solutionversion);
                 }
                 Some(("datacenter", parameter_matches)) => {
                     // Now we have a reference to remote's matches
@@ -79,14 +88,14 @@ fn main() {
                     println!("SID: {}", sid);
                     println!("Configversion: {}", configversion);
                     println!("Tag: {}", tag);
-                    add_xhanaversion(&connection, &sid, &configversion, &tag);
+                    /*add_xhanaversion(&connection, &sid, &configversion, &tag);*/
                 }
                 Some(("model", parameter_matches)) => {
                     // Now we have a reference to remote's matches
                     
                     let file = parameter_matches.value_of("file").unwrap();
                     println!("File: {}", file);
-                    add_xhanamodel(&connection, &file);
+                    /*add_xhanamodel(&connection, &file);*/
                     // add_xhanaversion(&connection, &sid, &configversion, &tag);
                 }
                 None => println!("No subcommand was used"),

@@ -76,14 +76,15 @@ pub fn establish_connection() -> PgConnection {
     }
 } */
 
-// Add HANA Parameter
+// Add HANA Parametertemplate
 // Save dataset in table xhanaparameter
 pub fn add_xhanaparameter<'a>(
     conn: &PgConnection,
-    version: &'a str,
-    info: &'a str,
+    parameterversion: &'a str,
     parameter: &'a str,
+    info: &'a str,
     scope: &'a str,
+    arc: &'a str,
     iotype: &'a str,
     valuetype: &'a str,
     mandatory: &'a str,
@@ -91,10 +92,11 @@ pub fn add_xhanaparameter<'a>(
     use schema::xhanaparameter;
 
     let new_xhp = XHanaParameterInsert {
-        version: version,
+        parameterversion: parameterversion,
         parameter: parameter,
         info: info,
         scope: scope,
+        arc: arc,
         iotype: iotype,
         valuetype: valuetype,
         mandatory: mandatory,
@@ -104,13 +106,15 @@ pub fn add_xhanaparameter<'a>(
 
     diesel::insert_into(xhanaparameter::table)
         .values(&new_xhp)
-        .on_conflict((xhanaparameter::version, xhanaparameter::parameter))
+        .on_conflict((xhanaparameter::parameterversion, xhanaparameter::parameter, xhanaparameter::arc, xhanaparameter::iotype))
         .do_update()
         .set(&new_xhp)
         .get_result(conn)
         .expect("Error savong new parameter string")
 }
 
+
+/*
 pub fn query_hanaparameter<'a>(conn: &PgConnection, pversion: &str, pparameter: &str) {
     use schema::xhanaparameter::dsl::*;
 
@@ -122,29 +126,46 @@ pub fn query_hanaparameter<'a>(conn: &PgConnection, pversion: &str, pparameter: 
         .get_results::<XHanaParameterTable>(conn)
         .expect("Error loading parameters");
 }
+*/
 
 // Add HANA Architecture
 // Save dataset in table xhanaarc
-pub fn add_xhanaarc<'a>(conn: &PgConnection, sid: &'a str, arc: &'a str) -> XHanaArcTable {
+pub fn add_xhanaarc<'a>(conn: &PgConnection, arc: &'a str) -> XHanaArcTable {
     use schema::xhanaarc;
 
-    let new_xha = XHanaArcInsert { sid: sid, arc: arc };
+    let new_xha = XHanaArcInsert { arc: arc };
 
     diesel::insert_into(xhanaarc::table)
         .values(&new_xha)
-        .on_conflict(xhanaarc::sid)
+        .on_conflict(xhanaarc::arc)
         .do_update()
         .set(&new_xha)
         .get_result(conn)
-        .expect("Error savong new parameter string")
+        .expect("Error saving new parameter string")
+}
+
+// Add HANA Solutionname
+// Save dataset in table xhanasolution
+pub fn add_xhanasolution<'a>(conn: &PgConnection, solutionversion: &'a str) -> XHanaSolutionTable {
+    use schema::xhanasolution;
+
+    let new_xha = XHanaSolutionInsert { solutionversion: solutionversion };
+
+    diesel::insert_into(xhanasolution::table)
+        .values(&new_xha)
+        .on_conflict(xhanasolution::solutionversion)
+        .do_update()
+        .set(&new_xha)
+        .get_result(conn)
+        .expect("Error saving new parameter string")
 }
 
 // Add HANA Datacenter
 // Save dataset in table xhanadatacenter
-pub fn add_xhanadc<'a>(conn: &PgConnection, dcid: &'a i32, name: &'a str) -> XHanaDCTable {
+pub fn add_xhanadc<'a>(conn: &PgConnection, dcid: &'a i32, name: &'a str) -> XHanaDatacenterTable {
     use schema::xhanadatacenter;
 
-    let new_xhd = XHanaDCInsert {
+    let new_xhd = XHanaDatacenterInsert {
         dcid: dcid,
         name: name,
     };
@@ -160,6 +181,7 @@ pub fn add_xhanadc<'a>(conn: &PgConnection, dcid: &'a i32, name: &'a str) -> XHa
 
 // Add HANA Configurationversion
 // Save dataset in table xhanadatacenter
+/*
 pub fn add_xhanaversion<'a>(
     conn: &PgConnection,
     sid: &'a str,
@@ -277,3 +299,4 @@ pub fn add_xhanamodel<'a>(conn: &PgConnection, file: &'a str) -> Result<(), Box<
 
     Ok(())        
 }
+*/
