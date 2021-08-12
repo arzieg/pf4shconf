@@ -70,7 +70,7 @@ table! {
 }
 
 table! {
-    xhanaparameter (parameterversion, parameter, arc) {
+    xhanaparameter (parameterversion, parameter, arc, iotype) {
         parameterversion -> Varchar,
         parameter -> Varchar,
         info -> Nullable<Varchar>,

@@ -67,9 +67,27 @@ fn main() {
                 }
                 Some(("solution", parameter_matches)) => {
                     // Now we have a reference to remote's matches
-                    let solutionversion = parameter_matches.value_of("name").unwrap();
+                    let solutionversion = parameter_matches.value_of("description").unwrap();
+                    let sid = parameter_matches.value_of("sid").unwrap();
+                    let arctype = parameter_matches.value_of("arctype").unwrap();
+                    let sidname =  match parameter_matches.occurrences_of("sidname") {
+                        0 => "EMPTY",
+                        _ => parameter_matches.value_of("sidname").unwrap()
+                      };
+                    let tag =  match parameter_matches.occurrences_of("tag") {
+                        0 => "EMPTY",
+                        _ => parameter_matches.value_of("tag").unwrap()
+                      };
+
                     println!("Solutionversion: {}", solutionversion);
+                    println!("SID: {}", sid);
+                    println!("sidname: {}", sidname);
+                    println!("arctype: {}", arctype);
+                    println!("tag: {}", tag);    
+                    
+                    add_xhanasid(&connection, &sid, &sidname);
                     add_xhanasolution(&connection, &solutionversion);
+                    add_xhana_solution_sid(&connection, &solutionversion, &sid, &arctype, &tag);
                 }
                 Some(("datacenter", parameter_matches)) => {
                     // Now we have a reference to remote's matches

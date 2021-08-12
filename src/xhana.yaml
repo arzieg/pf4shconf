@@ -147,15 +147,57 @@ subcommands:
                         min_values: 1
                         max_values: 1
             - solution:
-                about: Add Solutionname
-                # Subcommand args are exactly like App args
+                about: Add Solution for SID
                 args:
-                    - name:
+                    - sid:
+                        short: s
+                        long: sid
+                        help: Sytem Identifier
+                        takes_value: true
+                        required: true
+                        min_values: 1
+                        max_values: 1
+                    - sidname:
                         short: n
-                        long: name
+                        long: sidname
+                        help: SID description
+                        takes_value: true
+                        required: false
+                        min_values: 1
+                        max_values: 1
+                    - description:
+                        short: d
+                        long: description
                         help: Name of the solution
                         takes_value: true
                         required: true
+                        min_values: 1
+                        max_values: 1
+                    - arctype:
+                        short: a
+                        long: arctype
+                        help: Shortname of the Architecture
+                        takes_value: true
+                        min_values: 1
+                        max_values: 1
+                        default_value: SOR
+                        required: true
+                        possible_values:
+                            - SO
+                            - SOR
+                            - SU
+                            - SUR
+                            - ISCSI
+                            - MajorityMaker
+                            - NetApp
+                            - Toolserver
+                            - general
+                    - tag:
+                        short: t
+                        long: tag
+                        help: tag for the solution
+                        takes_value: true
+                        required: false
                         min_values: 1
                         max_values: 1
             - model:

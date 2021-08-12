@@ -179,35 +179,60 @@ pub fn add_xhanadc<'a>(conn: &PgConnection, dcid: &'a i32, name: &'a str) -> XHa
         .expect("Error savong new parameter string")
 }
 
-// Add HANA Configurationversion
-// Save dataset in table xhanadatacenter
-/*
-pub fn add_xhanaversion<'a>(
-    conn: &PgConnection,
-    sid: &'a str,
-    version: &'a str,
-    tag: &'a str,
-) -> XHanaVersionTable {
-    use schema::xhanaversion;
+// Add HANA SID
+// Save dataset in table xhanasid
+pub fn add_xhanasid<'a>(conn: &PgConnection, sid: &'a str, name: &'a str) -> XHanaSIDTable {
+    use schema::xhanasid;
 
-    let new_xhv = XHanaVersionInsert {
+    let new_xhd = XHanaSIDInsert {
         sid: sid,
-        version: version,
+        name: match name {
+            "EMPTY" => "",
+            _ => name,
+        },
+    };
+
+    diesel::insert_into(xhanasid::table)
+        .values(&new_xhd)
+        .on_conflict(xhanasid::sid)
+        .do_update()
+        .set(&new_xhd)
+        .get_result(conn)
+        .expect("Error savong new parameter string")
+}
+
+// Add dependency HANA SID<->Solution 
+// Save dataset in table xhana_solution_sid
+
+pub fn add_xhana_solution_sid<'a>(
+    conn: &PgConnection,
+    solutionversion: &'a str,
+    sid: &'a str,
+    arc: &'a str,
+    tag: &'a str,
+) -> XHanaSolutionSIDTable {
+    use schema::xhana_solution_sid;
+
+    let new_xhv = XHanaSolutionSIDInsert {
+        solutionversion: solutionversion,
+        sid: sid,
+        arc: arc,
         tag: match tag {
             "EMPTY" => "",
             _ => tag,
         },
     };
 
-    diesel::insert_into(xhanaversion::table)
+    diesel::insert_into(xhana_solution_sid::table)
         .values(&new_xhv)
-        .on_conflict((xhanaversion::sid, xhanaversion::version))
+        .on_conflict(xhana_solution_sid::sid)
         .do_update()
         .set(&new_xhv)
         .get_result(conn)
         .expect("Error saving new parameter string")
 }
 
+/*
 // Add general Parameter
 // Save dataset in table xhanageneral
 pub fn add_xhanageneral<'a>(
