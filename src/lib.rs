@@ -232,6 +232,55 @@ pub fn add_xhana_solution_sid<'a>(
         .expect("Error saving new parameter string")
 }
 
+pub fn add_xhana_sid_host<'a>( conn: &PgConnection, psid: &'a str, phostname: &'a str,) {
+    use schema::xhana_solution_sid::dsl::*;
+    use schema::xhana_sid_host::dsl::*;
+    
+    let psolutionversion = xhana_solution_sid
+                            .select(solutionversion)
+                            .filter(sid.eq(&psid))
+                            .load::<String>(conn)
+                            .unwrap();
+
+    println! ("Solutionversion {:?}", psolutionversion);
+
+    
+    
+
+ // select solutionversion from xhana_solution_sid where sid = sid
+ // wenn empty, dann fehler "keine Solution definiert für SID XXX"
+ // wenn ok, dann 
+ // insert into xhanahost (hostname)
+ // insert into xhana_sid_host (soltionversion, sid, hostname)
+/*
+    let results = xhana_sid_host
+        .filter(sid.eq(&sid))
+        .get_results::<XHanaSIDHostTable>(conn)
+        .expect("Error loading parameters");
+
+
+    
+    let new_xhv = XHanaSolutionSIDInsert {
+        solutionversion: solutionversion,
+        sid: sid,
+        arc: arc,
+        tag: match tag {
+            "EMPTY" => "",
+            _ => tag,
+        },
+    };
+
+    diesel::insert_into(xhana_solution_sid::table)
+        .values(&new_xhv)
+        .on_conflict(xhana_solution_sid::sid)
+        .do_update()
+        .set(&new_xhv)
+        .get_result(conn)
+        .expect("Error saving new parameter string")
+    
+    */
+}
+
 /*
 // Add general Parameter
 // Save dataset in table xhanageneral

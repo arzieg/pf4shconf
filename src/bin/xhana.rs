@@ -24,7 +24,7 @@ fn main() {
             match add_matches.subcommand() {
                 Some(("parametertemplate", parameter_matches)) => {
                     // Now we have a reference to remote's matches
-                    let version = parameter_matches.value_of("version").unwrap();
+                    let version = parameter_matches.value_of("parameterversion").unwrap();
                     let info = parameter_matches.value_of("info").unwrap();
                     let parameter = parameter_matches.value_of("name").unwrap();
                     let typ = parameter_matches.value_of("type").unwrap();
@@ -98,15 +98,42 @@ fn main() {
                     println!("Name: {}", name);
                     add_xhanadc(&connection, &id, &name);
                 }
-                Some(("version", parameter_matches)) => {
+                // ToDo
+                Some(("config", parameter_matches)) => {
+                    // Now we have a reference to remote's matches
+                    let parameterversion = parameter_matches.value_of("parameterversion").unwrap();
+                    let parameter = parameter_matches.value_of("parameter").unwrap();
+                    let sid =  match parameter_matches.occurrences_of("sid") {
+                        0 => "EMPTY",
+                        _ => parameter_matches.value_of("sid").unwrap()
+                      };
+                    let hostname =  match parameter_matches.occurrences_of("hostname") {
+                        0 => "EMPTY",
+                        _ => parameter_matches.value_of("hostname").unwrap()
+                      };
+                    let dcid =  match parameter_matches.occurrences_of("dcid") {
+                        0 => "EMPTY",
+                        _ => parameter_matches.value_of("dcid").unwrap()
+                      };
+                    let value = parameter_matches.value_of("value").unwrap();
+
+                    println!("Parameterversion: {}", parameterversion);
+                    println!("Parameter: {}", parameter);
+                    println!("sid: {}", sid);
+                    println!("hostname: {}", hostname);
+                    println!("dcid: {}", dcid);
+                    println!("value: {}", value);
+                    
+                    /*add_xhanaversion(&connection, &sid, &configversion, &tag);*/
+                }
+                Some(("host", parameter_matches)) => {
                     // Now we have a reference to remote's matches
                     let sid = parameter_matches.value_of("sid").unwrap();
-                    let configversion = parameter_matches.value_of("configversion").unwrap();
-                    let tag = parameter_matches.value_of("tag").unwrap();
+                    let hostname = parameter_matches.value_of("hostname").unwrap();
                     println!("SID: {}", sid);
-                    println!("Configversion: {}", configversion);
-                    println!("Tag: {}", tag);
-                    /*add_xhanaversion(&connection, &sid, &configversion, &tag);*/
+                    println!("hostname: {}", hostname);
+                    add_xhana_sid_host(&connection, &sid, &hostname);
+                    // add_xhanadc(&connection, &id, &name);
                 }
                 Some(("model", parameter_matches)) => {
                     // Now we have a reference to remote's matches
