@@ -15,6 +15,7 @@ use diesel::pg::PgConnection;
 use diesel::prelude::*;
 use dotenv::dotenv;
 use std::env;
+use std::str::*;
 
 use std::error::Error;
 // use std::ffi::OsString;
@@ -106,13 +107,17 @@ pub fn add_xhanaparameter<'a>(
 
     diesel::insert_into(xhanaparameter::table)
         .values(&new_xhp)
-        .on_conflict((xhanaparameter::parameterversion, xhanaparameter::parameter, xhanaparameter::arc, xhanaparameter::iotype))
+        .on_conflict((
+            xhanaparameter::parameterversion,
+            xhanaparameter::parameter,
+            xhanaparameter::arc,
+            xhanaparameter::iotype,
+        ))
         .do_update()
         .set(&new_xhp)
         .get_result(conn)
         .expect("Error savong new parameter string")
 }
-
 
 /*
 pub fn query_hanaparameter<'a>(conn: &PgConnection, pversion: &str, pparameter: &str) {
@@ -149,7 +154,9 @@ pub fn add_xhanaarc<'a>(conn: &PgConnection, arc: &'a str) -> XHanaArcTable {
 pub fn add_xhanasolution<'a>(conn: &PgConnection, solutionversion: &'a str) -> XHanaSolutionTable {
     use schema::xhanasolution;
 
-    let new_xha = XHanaSolutionInsert { solutionversion: solutionversion };
+    let new_xha = XHanaSolutionInsert {
+        solutionversion: solutionversion,
+    };
 
     diesel::insert_into(xhanasolution::table)
         .values(&new_xha)
@@ -201,7 +208,7 @@ pub fn add_xhanasid<'a>(conn: &PgConnection, sid: &'a str, name: &'a str) -> XHa
         .expect("Error savong new parameter string")
 }
 
-// Add dependency HANA SID<->Solution 
+// Add dependency HANA SID<->Solution
 // Save dataset in table xhana_solution_sid
 
 pub fn add_xhana_solution_sid<'a>(
@@ -232,34 +239,56 @@ pub fn add_xhana_solution_sid<'a>(
         .expect("Error saving new parameter string")
 }
 
-pub fn add_xhana_sid_host<'a>( conn: &PgConnection, psid: &'a str, phostname: &'a str,) {
-    use schema::xhana_solution_sid::dsl::*;
+pub fn add_xhana_sid_host<'a>(conn: &PgConnection, psid: &'a str, phostname: &'a str) {
     use schema::xhana_sid_host::dsl::*;
-    
+    use schema::xhana_solution_sid::dsl::*;
+
     let psolutionversion = xhana_solution_sid
-                            .select(solutionversion)
-                            .filter(sid.eq(&psid))
-                            .load::<String>(conn)
-                            .unwrap();
+        .select(schema::xhana_solution_sid::dsl::solutionversion)
+        .filter(schema::xhana_solution_sid::dsl::sid.eq(&psid))
+        .distinct()
+        .load::<String>(conn)
+        .expect("Error in Query");
 
-    println! ("Solutionversion {:?}", psolutionversion);
+    // Wenn ein Rückgabewert, dann weiter
+    if psolutionversion.len() == 1 {
+        // psolutionversion ist vom Typ Vec<String>. Dies muss konvertiert werden in str.    
+        // collect() ist hier nicht die richtige Funktion. Kann man aus einer Schleife über iter
+        // nur der erste Wert zurückgegeben werden als str?
+        let v4: &str = psolutionversion.iter().map(|s| s as &str).collect();
 
-    
-    
+        println!("w= {:?}",v4);
 
- // select solutionversion from xhana_solution_sid where sid = sid
- // wenn empty, dann fehler "keine Solution definiert für SID XXX"
- // wenn ok, dann 
- // insert into xhanahost (hostname)
- // insert into xhana_sid_host (soltionversion, sid, hostname)
-/*
+        // Now we update xhana_hostname and xhana_sid_host
+
+        let new_xhh = XHanaHostInsert {
+            hostname: phostname,
+        };
+    }
+    else {
+        panic!("Kein Wert gefunden");
+    }
+
+    /*
+        let new_xhs = XHanaSIDHostInsert {
+            solutionversion : &psolutionversion,
+            sid : psid,
+            hostname : phostname,
+        }
+    */
+
+    // select solutionversion from xhana_solution_sid where sid = sid
+    // wenn empty, dann fehler "keine Solution definiert für SID XXX"
+    // wenn ok, dann
+    // insert into xhanahost (hostname)
+    // insert into xhana_sid_host (soltionversion, sid, hostname)
+    /*
     let results = xhana_sid_host
         .filter(sid.eq(&sid))
         .get_results::<XHanaSIDHostTable>(conn)
         .expect("Error loading parameters");
 
 
-    
     let new_xhv = XHanaSolutionSIDInsert {
         solutionversion: solutionversion,
         sid: sid,
@@ -277,7 +306,6 @@ pub fn add_xhana_sid_host<'a>( conn: &PgConnection, psid: &'a str, phostname: &'
         .set(&new_xhv)
         .get_result(conn)
         .expect("Error saving new parameter string")
-    
     */
 }
 
@@ -285,9 +313,9 @@ pub fn add_xhana_sid_host<'a>( conn: &PgConnection, psid: &'a str, phostname: &'
 // Add general Parameter
 // Save dataset in table xhanageneral
 pub fn add_xhanageneral<'a>(
-    conn: &PgConnection, 
-    version: &'a str, 
-    parameter: &'a str, 
+    conn: &PgConnection,
+    version: &'a str,
+    parameter: &'a str,
     value: &'a str,) -> XHanaGeneralTable {
 
     use schema::xhanageneral;
@@ -333,19 +361,17 @@ pub fn add_xhanamodel<'a>(conn: &PgConnection, file: &'a str) -> Result<(), Box<
         let record: Model = result?;
         let pparameter: String = remove_whitespace(record.parameter);
         print!("Check Parameter {} in Version {}: ", pparameter, pversion);
-              
         xhanaparameter
         .filter(version.eq(&pversion))
         .filter(parameter.eq(&pparameter))
         .filter(iotype.eq("input").or(iotype.eq("both")))
         .get_result::<XHanaParameterTable>(conn)
         .expect(&format!("\nDid not found Parameter {} in Version {} - Could not load model!\n",
-             pparameter, 
+             pparameter,
              pversion));
         //println!("DEBUG {:?}", xhp.parameter);
         println!("");
     }
-    
     // also hier sind alle Parameter definiert in xhanaparameter. Nun kann das Modell geladen
     // werden
     let mut rdr = csv::ReaderBuilder::new()
@@ -359,18 +385,16 @@ pub fn add_xhanamodel<'a>(conn: &PgConnection, file: &'a str) -> Result<(), Box<
         let pparameter: String = remove_whitespace(record.parameter);
         let pvalue: String = remove_whitespace(record.value);
         println!("Parameter: {}, Value:{}", pparameter, pvalue);
-        
         // fill xhanageneral
-        add_xhanageneral(&conn, pversion, &pparameter, &pvalue);   
+        add_xhanageneral(&conn, pversion, &pparameter, &pvalue);
         println!("Insert Version {}, Parameter {}, Value {}: ", pversion, pparameter, pvalue);
     }
-    
     // ToDo
-    // Werte für Tabelle 
+    // Werte für Tabelle
     // xhanahost +
     // xhanasid einfügen
 
 
-    Ok(())        
+    Ok(())
 }
 */
