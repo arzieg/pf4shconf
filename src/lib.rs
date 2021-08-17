@@ -239,9 +239,11 @@ pub fn add_xhana_solution_sid<'a>(
         .expect("Error saving new parameter string")
 }
 
-pub fn add_xhana_sid_host<'a>(conn: &PgConnection, psid: &'a str, phostname: &'a str) {
+pub fn add_xhana_sid_host<'a>(conn: &PgConnection, psid: &'a str, phostname: &'a str) -> XHanaSIDHostTable {
     use schema::xhana_sid_host::dsl::*;
     use schema::xhana_solution_sid::dsl::*;
+    use schema::xhana_sid_host;
+    use schema::xhanahost;
 
     let psolutionversion = xhana_solution_sid
         .select(schema::xhana_solution_sid::dsl::solutionversion)
@@ -252,21 +254,42 @@ pub fn add_xhana_sid_host<'a>(conn: &PgConnection, psid: &'a str, phostname: &'a
 
     // Wenn ein Rückgabewert, dann weiter
     if psolutionversion.len() == 1 {
-        // psolutionversion ist vom Typ Vec<String>. Dies muss konvertiert werden in str.    
-        // collect() ist hier nicht die richtige Funktion. Kann man aus einer Schleife über iter
-        // nur der erste Wert zurückgegeben werden als str?
-        let v4: &str = psolutionversion.iter().map(|s| s as &str).collect();
+        let mut i_str = "";
 
-        println!("w= {:?}",v4);
+        for i in psolutionversion.iter() {
+            i_str = i.as_str();
+        } 
+    
+        println!("w= {:?}",&i_str);
 
         // Now we update xhana_hostname and xhana_sid_host
 
         let new_xhh = XHanaHostInsert {
             hostname: phostname,
         };
+
+        //TODO
+        // hier funktion aufrufen 
+        //   xhanahostinsert 
+
+    
+        let new_xhs = XHanaSIDHostInsert {
+            solutionversion: i_str,
+            sid : psid,
+            hostname : phostname,
+        };
+
+        diesel::insert_into(xhana_sid_host)
+        .values(&new_xhs)
+        .on_conflict((xhana_sid_host::solutionversion, xhana_sid_host::sid, xhana_sid_host::hostname))
+        .do_update()
+        .set(&new_xhs)
+        .get_result(conn)
+        .expect("Error saving new parameter string")
+
     }
     else {
-        panic!("Kein Wert gefunden");
+        panic!("Keinen Wert gefunden");
     }
 
     /*
