@@ -34,49 +34,6 @@ pub fn establish_connection() -> PgConnection {
     PgConnection::establish(&database_url).expect(&format!("Error connecting to {}", database_url))
 }
 
-/* pub fn create_xhanageneral<'a>(
-    conn: &PgConnection,
-    sid: &'a str,
-    version: &'a str,
-    parameter: &'a str,
-    value: &'a str,
-) -> XHanaGeneral {
-    use schema::xhanageneral;
-
-    let new_xhg = NewXHanaGeneral {
-        sid: sid,
-        version: version,
-        parameter: parameter,
-        value: value,
-    };
-
-    diesel::insert_into(xhanageneral::table)
-        .values(&new_xhg)
-        .get_result(conn)
-        .expect("Error saving new general parameter")
-} */
-
-/* pub fn query_sid_version<'a>(conn: &PgConnection, psid: &str, pversion: &str) {
-    use schema::xhanageneral::dsl::*;
-
-    println!("SID = {}, VERSION = {}", &psid, &pversion);
-
-    let results = xhanageneral
-        .filter(sid.eq(&psid))
-        .filter(version.eq(&pversion))
-        .get_results::<XHanaGeneral>(conn)
-        .expect("Error loading parameters");
-
-    println!("Displaying {} xHanaGeneral", results.len());
-    for xhg in results {
-        println!(
-            "{} {} {} = {:?} ",
-            xhg.sid, xhg.version, xhg.parameter, xhg.value
-        );
-        println!("------------------------------------------------------------------\n");
-    }
-} */
-
 // Add HANA Parametertemplate
 // Save dataset in table xhanaparameter
 pub fn add_xhanaparameter<'a>(
@@ -239,11 +196,9 @@ pub fn add_xhana_solution_sid<'a>(
         .expect("Error saving new parameter string")
 }
 
-
 // Helperfunction for add_xhana_sid_host
-pub fn add_xhana_host (conn: &PgConnection, phostname: &str) -> XHanaHostTable
-{
-    use schema::xhanahost; 
+pub fn add_xhana_host(conn: &PgConnection, phostname: &str) -> XHanaHostTable {
+    use schema::xhanahost;
 
     let new_xhh = XHanaHostInsert {
         hostname: phostname,
@@ -256,14 +211,16 @@ pub fn add_xhana_host (conn: &PgConnection, phostname: &str) -> XHanaHostTable
         .set(&new_xhh)
         .get_result(conn)
         .expect("Error saving new parameter string")
-
 }
 
-pub fn add_xhana_sid_host<'a>(conn: &PgConnection, psid: &'a str, phostname: &'a str) -> XHanaSIDHostTable {
+pub fn add_xhana_sid_host<'a>(
+    conn: &PgConnection,
+    psid: &'a str,
+    phostname: &'a str,
+) -> XHanaSIDHostTable {
+    use schema::xhana_sid_host;
     use schema::xhana_sid_host::dsl::*;
     use schema::xhana_solution_sid::dsl::*;
-    use schema::xhana_sid_host;
-    
 
     let psolutionversion = xhana_solution_sid
         .select(schema::xhana_solution_sid::dsl::solutionversion)
@@ -278,71 +235,82 @@ pub fn add_xhana_sid_host<'a>(conn: &PgConnection, psid: &'a str, phostname: &'a
 
         for i in psolutionversion.iter() {
             i_str = i.as_str();
-        } 
-    
-        println!("w= {:?}",&i_str);
+        }
 
+        println!("w= {:?}", &i_str);
         // now we update xhanahost and xhana_sid_host
         // for xhanahost I use a helper function
-        let rv : XHanaHostTable = add_xhana_host(conn, phostname); 
-    
+        let rv: XHanaHostTable = add_xhana_host(conn, phostname);
         let new_xhs = XHanaSIDHostInsert {
             solutionversion: i_str,
-            sid : psid,
-            hostname : phostname,
+            sid: psid,
+            hostname: phostname,
         };
 
         diesel::insert_into(xhana_sid_host)
-        .values(&new_xhs)
-        .on_conflict((xhana_sid_host::solutionversion, xhana_sid_host::sid, xhana_sid_host::hostname))
-        .do_update()
-        .set(&new_xhs)
-        .get_result(conn)
-        .expect("Error saving new parameter string")
-
-    }
-    else {
+            .values(&new_xhs)
+            .on_conflict((
+                xhana_sid_host::solutionversion,
+                xhana_sid_host::sid,
+                xhana_sid_host::hostname,
+            ))
+            .do_update()
+            .set(&new_xhs)
+            .get_result(conn)
+            .expect("Error saving new parameter string")
+    } else {
         panic!("Keinen Wert gefunden");
     }
+}
 
-    /*
-        let new_xhs = XHanaSIDHostInsert {
-            solutionversion : &psolutionversion,
-            sid : psid,
-            hostname : phostname,
-        }
-    */
+/*
+    config (xhanageneral, xhana_host_para, xhana_sid_para)
+        - parameterversion
+        - parameter
+        - sid
+        - hostname
+        - dcid
+        - value
+*/
 
-    // select solutionversion from xhana_solution_sid where sid = sid
-    // wenn empty, dann fehler "keine Solution definiert für SID XXX"
-    // wenn ok, dann
-    // insert into xhanahost (hostname)
-    // insert into xhana_sid_host (soltionversion, sid, hostname)
-    /*
-    let results = xhana_sid_host
-        .filter(sid.eq(&sid))
-        .get_results::<XHanaSIDHostTable>(conn)
-        .expect("Error loading parameters");
+pub fn add_xhana_config(
+    conn: &PgConnection,
+    pparameterversion: &str,
+    pparameter: &str,
+    psid: &str,
+    phostname: &str,
+    pdcid: &str,
+    pvalue: &str,
+) {
+    use schema::xhana_host_para::dsl::*;
+    use schema::xhana_sid_para::dsl::*;
+    use schema::xhanageneral::dsl::*;
+    use schema::xhanahost::dsl::*;
+    use schema::xhanaparameter::dsl::*;
 
+    println!("in function {}", &pparameterversion);
+    println!("in function {}", &pparameter);
+    println!("in function {}", &psid);
+    println!("in function {}", &phostname);
+    println!("in function {}", &pdcid);
+    println!("in function {}", &pvalue);
 
-    let new_xhv = XHanaSolutionSIDInsert {
-        solutionversion: solutionversion,
-        sid: sid,
-        arc: arc,
-        tag: match tag {
-            "EMPTY" => "",
-            _ => tag,
-        },
-    };
+    let xhp = xhanaparameter
+        .filter(schema::xhanaparameter::dsl::parameter.eq(&pparameter))
+        .filter(schema::xhanaparameter::dsl::parameterversion.eq(&pparameterversion))
+        .filter(schema::xhanaparameter::dsl::iotype.eq("input"))
+        .load::<XHanaParameterTable>(conn)
+        .expect("Error in Query");
 
-    diesel::insert_into(xhana_solution_sid::table)
-        .values(&new_xhv)
-        .on_conflict(xhana_solution_sid::sid)
-        .do_update()
-        .set(&new_xhv)
-        .get_result(conn)
-        .expect("Error saving new parameter string")
-    */
+    for i in xhp {
+        println!("Parameterversion: {:?}", i.parameterversion);
+        println!("Parameter: {:?}", i.parameter);
+        println!("Info: {:?}", i.info);
+        println!("Scope: {:?}", i.scope);
+        println!("IOtype: {:?}", i.iotype);
+        println!("arc: {:?}", i.arc);
+        println!("Mandatory: {:?}", i.mandatory);
+    }
 }
 
 /*

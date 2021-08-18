@@ -129,11 +129,29 @@ fn main() {
                 Some(("host", parameter_matches)) => {
                     // Now we have a reference to remote's matches
                     let sid = parameter_matches.value_of("sid").unwrap();
-                    let hostname = parameter_matches.value_of("hostname").unwrap();
+                    let hostname = parameter_matches.value_of("hostname").unwrap();                    
                     println!("SID: {}", sid);
                     println!("hostname: {}", hostname);
                     add_xhana_sid_host(&connection, &sid, &hostname);
-                    // add_xhanadc(&connection, &id, &name);
+                }
+                Some(("config", parameter_matches)) => {
+                    let parameterversion = parameter_matches.value_of("parameterversion").unwrap();
+                    let parameter = parameter_matches.value_of("parameter").unwrap();
+                    let value = parameter_matches.value_of("value").unwrap();
+                    let sid =  match parameter_matches.occurrences_of("sid") {
+                        0 => "EMPTY",
+                        _ => parameter_matches.value_of("sid").unwrap()
+                      };
+                    let dcid =  match parameter_matches.occurrences_of("dcid") {
+                    0 => "EMPTY",
+                    _ => parameter_matches.value_of("dcid").unwrap()
+                    };
+                    let hostname =  match parameter_matches.occurrences_of("hostname") {
+                        0 => "EMPTY",
+                        _ => parameter_matches.value_of("hostname").unwrap()
+                    };
+
+                    add_xhana_config(&connection, &parameterversion, &parameter, &sid, &hostname, &dcid, &value);
                 }
                 Some(("model", parameter_matches)) => {
                     // Now we have a reference to remote's matches
