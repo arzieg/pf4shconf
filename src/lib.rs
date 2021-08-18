@@ -239,11 +239,31 @@ pub fn add_xhana_solution_sid<'a>(
         .expect("Error saving new parameter string")
 }
 
+
+// Helperfunction for add_xhana_sid_host
+pub fn add_xhana_host (conn: &PgConnection, phostname: &str) -> XHanaHostTable
+{
+    use schema::xhanahost; 
+
+    let new_xhh = XHanaHostInsert {
+        hostname: phostname,
+    };
+
+    diesel::insert_into(xhanahost::table)
+        .values(&new_xhh)
+        .on_conflict(xhanahost::hostname)
+        .do_update()
+        .set(&new_xhh)
+        .get_result(conn)
+        .expect("Error saving new parameter string")
+
+}
+
 pub fn add_xhana_sid_host<'a>(conn: &PgConnection, psid: &'a str, phostname: &'a str) -> XHanaSIDHostTable {
     use schema::xhana_sid_host::dsl::*;
     use schema::xhana_solution_sid::dsl::*;
     use schema::xhana_sid_host;
-    use schema::xhanahost;
+    
 
     let psolutionversion = xhana_solution_sid
         .select(schema::xhana_solution_sid::dsl::solutionversion)
@@ -262,16 +282,9 @@ pub fn add_xhana_sid_host<'a>(conn: &PgConnection, psid: &'a str, phostname: &'a
     
         println!("w= {:?}",&i_str);
 
-        // Now we update xhana_hostname and xhana_sid_host
-
-        let new_xhh = XHanaHostInsert {
-            hostname: phostname,
-        };
-
-        //TODO
-        // hier funktion aufrufen 
-        //   xhanahostinsert 
-
+        // now we update xhanahost and xhana_sid_host
+        // for xhanahost I use a helper function
+        let rv : XHanaHostTable = add_xhana_host(conn, phostname); 
     
         let new_xhs = XHanaSIDHostInsert {
             solutionversion: i_str,
