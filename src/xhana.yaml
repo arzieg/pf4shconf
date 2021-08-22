@@ -224,7 +224,7 @@ subcommands:
                         short: s
                         long: sid
                         multiple: false
-                        help: System Identifier
+                        help: System Identifier (only used by SID specific variable)
                         required: false
                         min_values: 1
                         max_values: 1
@@ -232,7 +232,7 @@ subcommands:
                         short: h
                         long: hostname
                         multiple: false
-                        help: hostname which configuration belongs too
+                        help: hostname which configuration belongs too (only used by Hostvariable)
                         required: false
                         min_values: 1
                         max_values: 1

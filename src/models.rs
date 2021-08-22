@@ -180,7 +180,7 @@ pub struct XHanaGeneralTable {
     pub parameter: String,
     pub solutionversion: String,
     pub sid: String,
-    pub value: Option<String>,    // Option<String> wird hier benötigt, da es ein Nullable - Value in Schema 
+    pub value: String,   
     pub arc: String,
     pub iotype: String,
 }

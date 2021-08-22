@@ -15,7 +15,7 @@ use diesel::pg::PgConnection;
 use diesel::prelude::*;
 use dotenv::dotenv;
 use std::env;
-use std::str::*;
+use std::str;
 
 use std::error::Error;
 // use std::ffi::OsString;
@@ -263,15 +263,47 @@ pub fn add_xhana_sid_host<'a>(
     }
 }
 
-/*
-    config (xhanageneral, xhana_host_para, xhana_sid_para)
-        - parameterversion
-        - parameter
-        - sid
-        - hostname
-        - dcid
-        - value
-*/
+fn add_xhana_general(
+    conn: &PgConnection,
+    pparameterversion: &str,
+    pparameter: &str,
+    psolutionversion: &str,
+    psid: &str,
+    parc: &str,
+    piotype: &str,
+    pvalue: &str,
+) -> XHanaGeneralTable {
+    
+    use schema::xhanageneral;
+    use schema::xhanageneral::dsl::*;
+
+    let new_xhg = XHanaGeneralInsert {
+        parameterversion : pparameterversion,
+        parameter : pparameter,
+        solutionversion : psolutionversion,
+        sid : psid,
+        arc : parc,
+        iotype : piotype,
+        value: match pvalue {
+            "EMPTY" => "",
+            _ => pvalue,
+        },
+    };
+
+
+    diesel::insert_into(xhanageneral)
+    .values(&new_xhg)
+    .on_conflict((
+        xhanageneral::parameterversion,
+        xhanageneral::parameter,
+        xhanageneral::solutionversion,
+    ))
+    .do_update()
+    .set(&new_xhg)
+    .get_result(conn)
+    .expect("Error saving new parameter string")
+
+}
 
 pub fn add_xhana_config(
     conn: &PgConnection,
@@ -287,21 +319,32 @@ pub fn add_xhana_config(
     use schema::xhanageneral::dsl::*;
     use schema::xhanahost::dsl::*;
     use schema::xhanaparameter::dsl::*;
+    use schema::xhana_solution_sid::dsl::*;
 
-    println!("in function {}", &pparameterversion);
-    println!("in function {}", &pparameter);
-    println!("in function {}", &psid);
-    println!("in function {}", &phostname);
-    println!("in function {}", &pdcid);
-    println!("in function {}", &pvalue);
+    use schema::xhana_solution_sid;
+
+    println!("in parameterversion {:?}", &pparameterversion);
+    println!("in parameter {:?}", &pparameter);
+    println!("in sid {:?}", &psid);
+    println!("in hostname {:?}", &phostname);
+    println!("in dcid {:?}", &pdcid);
+    println!("in value {:?}", &pvalue);
 
     let xhp = xhanaparameter
         .filter(schema::xhanaparameter::dsl::parameter.eq(&pparameter))
         .filter(schema::xhanaparameter::dsl::parameterversion.eq(&pparameterversion))
-        .filter(schema::xhanaparameter::dsl::iotype.eq("input"))
+        .filter(schema::xhanaparameter::dsl::iotype.eq("both"))
         .load::<XHanaParameterTable>(conn)
-        .expect("Error in Query");
+        .expect("Error in Query xhanaparameter");
 
+    let xhs = xhana_solution_sid.select(xhana_solution_sid::solutionversion)
+        .filter(schema::xhana_solution_sid::dsl::sid.eq(&psid))
+        .distinct()
+        .first::<String>(conn)
+        .expect("Error in Query xhana_solution_sid");
+    
+    println!("xhs = {}", xhs);
+        
     for i in xhp {
         println!("Parameterversion: {:?}", i.parameterversion);
         println!("Parameter: {:?}", i.parameter);
@@ -309,8 +352,27 @@ pub fn add_xhana_config(
         println!("Scope: {:?}", i.scope);
         println!("IOtype: {:?}", i.iotype);
         println!("arc: {:?}", i.arc);
-        println!("Mandatory: {:?}", i.mandatory);
-    }
+        println!("Mandatory: {:?}", i.mandatory);    
+
+        // add entry in xhanageneral
+        // &* wandelt String in &str um
+        add_xhana_general(conn, &*i.parameterversion, &*i.parameter, &*xhs, 
+            psid, &*i.arc, &*i.iotype, pvalue);
+
+    } 
+
+    
+    // fill xhanageneral
+    
+
+
+
+
+
+
+
+
+
 }
 
 /*

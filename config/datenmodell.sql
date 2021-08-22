@@ -33,25 +33,25 @@ insert into xHANASID (sid, name) values ('Toolserver', 'Der Toolserver');
 insert into xHANASID (sid, name) values ('ISCSIServer', 'Der ISCSI-Server');
 
 insert into xhanaparameter (parameterversion, parameter, info, scope, arc, iotype, valuetype, mandatory) 
- values ('1.0', 'PF4SH_SAPREPO_VERSION', 'SAP Repo', 'general', 'SO', 'output', 'string', 'y');
+ values ('1.0', 'PF4SH_SAPREPO_VERSION', 'SAP Repo', 'general', 'SO', 'both', 'string', 'y');
 insert into xhanaparameter (parameterversion, parameter, info, scope, arc, iotype, valuetype, mandatory) 
- values ('1.2', 'PF4SH_SAPREPO_VERSION', 'SAP Repo', 'general', 'SO', 'output', 'string', 'y');
+ values ('1.2', 'PF4SH_SAPREPO_VERSION', 'SAP Repo', 'general', 'SO', 'both', 'string', 'y');
 insert into xhanaparameter (parameterversion, parameter, info, scope, arc, iotype, valuetype, mandatory) 
- values ('1.0', 'PF4SH_<ARC>_<ID>_UID_SIDADM', 'UID SIDADM', 'host', 'SO', 'output', 'string', 'y');
+ values ('1.0', 'PF4SH_<ARC>_<ID>_UID_SIDADM', 'UID SIDADM', 'host', 'SO', 'both', 'string', 'y');
  insert into xhanaparameter (parameterversion, parameter, info, scope, arc, iotype, valuetype, mandatory) 
- values ('1.2', 'PF4SH_<ARC>_<ID>_UID_SIDADM', 'UID SIDADM', 'host', 'SO', 'output', 'string', 'y');
+ values ('1.2', 'PF4SH_<ARC>_<ID>_UID_SIDADM', 'UID SIDADM', 'host', 'SO', 'both', 'string', 'y');
 insert into xhanaparameter (parameterversion, parameter, info, scope, arc, iotype, valuetype, mandatory) 
- values ('1.0', 'PF4SH_TO_NET_MACS1', 'MAC Adresse des Toolservers', 'host','Toolserver', 'output', 'string', 'y');
+ values ('1.0', 'PF4SH_TO_NET_MACS1', 'MAC Adresse des Toolservers', 'host','Toolserver', 'both', 'string', 'y');
 insert into xhanaparameter (parameterversion, parameter, info, scope, arc, iotype, valuetype, mandatory) 
- values ('1.0', 'PF4SH_NAS_<DC>', 'NAS Datacenter', 'host', 'NetApp', 'output', 'string', 'y');
+ values ('1.0', 'PF4SH_NAS_<DC>', 'NAS Datacenter', 'host', 'NetApp', 'both', 'string', 'y');
 insert into xhanaparameter (parameterversion, parameter, info, scope, arc, iotype, valuetype, mandatory) 
- values ('1.0', 'PF4SH_<ARC>_NET_MACS<ID>_<DC>', 'MAC Adresse des Host', 'host', 'SO', 'output', 'string', 'y');
+ values ('1.0', 'PF4SH_<ARC>_NET_MACS<ID>_<DC>', 'MAC Adresse des Host', 'host', 'SO', 'both', 'string', 'y');
 insert into xhanaparameter (parameterversion, parameter, info, scope, arc, iotype, valuetype, mandatory) 
- values ('1.0', 'PF4SH_ISCSI_HOSTNAMES_<ID>', 'Hosts with ISCSI Devices', 'host', 'MajorityMaker', 'input', 'string', 'y');
+ values ('1.0', 'PF4SH_ISCSI_HOSTNAMES_<ID>', 'Hosts with ISCSI Devices', 'host', 'MajorityMaker', 'both', 'string', 'y');
 insert into xhanaparameter (parameterversion, parameter, info, scope, arc, iotype, valuetype, mandatory) 
- values ('1.0', 'PF4SH_ISCSI_HOSTNAMES_<ID>', 'Hosts with ISCSI Devices', 'host', 'SO', 'input', 'string', 'y');
+ values ('1.0', 'PF4SH_ISCSI_HOSTNAMES_<ID>', 'Hosts with ISCSI Devices', 'host', 'SO', 'both', 'string', 'y');
 insert into xhanaparameter (parameterversion, parameter, info, scope, arc, iotype, valuetype, mandatory) 
- values ('1.0', 'PF4SH_ISCSI_TARGET', 'ISCSI Server', 'host', 'ISCSI', 'input', 'string', 'y');
+ values ('1.0', 'PF4SH_ISCSI_TARGET', 'ISCSI Server', 'host', 'ISCSI', 'both', 'string', 'y');
 
 insert into xhanasolution (solutionversion) values ('BWonHANA');
 insert into xhanasolution (solutionversion) values ('S4HANA');
@@ -73,18 +73,18 @@ insert into xHANA_SOLUTION_SID (solutionversion, sid, arc, tag)
 
 
 insert into xHANAGENERAL (parameterversion, parameter, solutionversion, sid, arc, iotype, value)
-  values ('1.0', 'PF4SH_SAPREPO_VERSION', 'BWonHANA', 'Y04', 'SO', 'output', 'BWoH_Release_1');
+  values ('1.0', 'PF4SH_SAPREPO_VERSION', 'BWonHANA', 'Y04', 'SO', 'both', 'BWoH_Release_1');
 insert into xHANAGENERAL (parameterversion, parameter, solutionversion, sid, arc, iotype, value)
-  values ('1.2', 'PF4SH_SAPREPO_VERSION', 'BWonHANA', 'Y04', 'SO', 'output', 'BWoH_Release_3');
+  values ('1.2', 'PF4SH_SAPREPO_VERSION', 'BWonHANA', 'Y04', 'SO', 'both', 'BWoH_Release_3');
 
 insert into xHANA_SID_PARA (sid, parameterversion, parameter, value, arc, iotype) 
-  values ('Y04', '1.0', 'PF4SH_<ARC>_<ID>_UID_SIDADM', '6500', 'SO', 'output');
+  values ('Y04', '1.0', 'PF4SH_<ARC>_<ID>_UID_SIDADM', '6500', 'SO', 'both');
 insert into xHANA_SID_PARA (sid, parameterversion, parameter, value, arc, iotype) 
-  values ('Y04', '1.2', 'PF4SH_<ARC>_<ID>_UID_SIDADM', '6500', 'SO', 'output');
+  values ('Y04', '1.2', 'PF4SH_<ARC>_<ID>_UID_SIDADM', '6500', 'SO', 'both');
 insert into xHANA_SID_PARA (sid, parameterversion, parameter, value, arc, iotype) 
-  values ('Netapp01', '1.0', 'PF4SH_NAS_<DC>', 'DC1', 'NetApp', 'output');
+  values ('Netapp01', '1.0', 'PF4SH_NAS_<DC>', 'DC1', 'NetApp', 'both');
 insert into xHANA_SID_PARA (sid, parameterversion, parameter, value, arc, iotype) 
-  values ('Toolserver', '1.0', 'PF4SH_TO_NET_MACS1', 'A:B:C:D:E:F', 'Toolserver', 'output');
+  values ('Toolserver', '1.0', 'PF4SH_TO_NET_MACS1', 'A:B:C:D:E:F', 'Toolserver', 'both');
 
 insert into xHANAHOST (hostname) values ('hdb10y04-0001');
 insert into xHANAHOST (hostname) values ('hdb10y04-0002');
@@ -93,11 +93,11 @@ insert into xHANAHOST (hostname) values ('laszis159');
 
 
 insert into xHANA_HOST_PARA (hostname, parameterversion, dcid, parameter, arc, value, iotype) 
-  values ('hdb10y04-0001', '1.0', '1', 'PF4SH_ISCSI_HOSTNAMES_<ID>', 'SO','hdb10y04-0001', 'input');
+  values ('hdb10y04-0001', '1.0', '1', 'PF4SH_ISCSI_HOSTNAMES_<ID>', 'SO','hdb10y04-0001', 'both');
 insert into xHANA_HOST_PARA (hostname, parameterversion, dcid, parameter, arc, value, iotype) 
-  values ('laszis158', '1.0', '3', 'PF4SH_ISCSI_HOSTNAMES_<ID>', 'MajorityMaker', 'laszis158', 'input');
+  values ('laszis158', '1.0', '3', 'PF4SH_ISCSI_HOSTNAMES_<ID>', 'MajorityMaker', 'laszis158', 'both');
 insert into xHANA_HOST_PARA (hostname, parameterversion, dcid, parameter, arc, value, iotype) 
-  values ('laszis159', '1.0', '3', 'PF4SH_ISCSI_TARGET', 'ISCSI', 'laszis159', 'input');
+  values ('laszis159', '1.0', '3', 'PF4SH_ISCSI_TARGET', 'ISCSI', 'laszis159', 'both');
 
 insert into xHANA_SID_HOST (solutionversion, sid, hostname) 
  values ('BWonHANA', 'Y04', 'hdb10y04-0001');
