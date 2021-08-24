@@ -128,7 +128,7 @@ fn main() {
                         _ => parameter_matches.value_of("hostname").unwrap()
                     };
 
-                    add_xhana_config(&connection, &parameterversion, &parameter, &sid, &hostname, &dcid, &value);
+                    add_xhana_config(&connection, &parameterversion, &parameter, &solutionversion, &sid, &hostname, &dcid, &value);
                 }
                 Some(("model", parameter_matches)) => {
                     // Now we have a reference to remote's matches

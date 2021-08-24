@@ -37,15 +37,15 @@ insert into xhanaparameter (parameterversion, parameter, info, scope, arc, iotyp
 insert into xhanaparameter (parameterversion, parameter, info, scope, arc, iotype, valuetype, mandatory) 
  values ('1.2', 'PF4SH_SAPREPO_VERSION', 'SAP Repo', 'general', 'SO', 'both', 'string', 'y');
 insert into xhanaparameter (parameterversion, parameter, info, scope, arc, iotype, valuetype, mandatory) 
- values ('1.0', 'PF4SH_<ARC>_<ID>_UID_SIDADM', 'UID SIDADM', 'host', 'SO', 'both', 'string', 'y');
+ values ('1.0', 'PF4SH_<ARC>_<ID>_UID_SIDADM', 'UID SIDADM', 'host', 'SO', 'input', 'string', 'y');
  insert into xhanaparameter (parameterversion, parameter, info, scope, arc, iotype, valuetype, mandatory) 
- values ('1.2', 'PF4SH_<ARC>_<ID>_UID_SIDADM', 'UID SIDADM', 'host', 'SO', 'both', 'string', 'y');
+ values ('1.2', 'PF4SH_<ARC>_<ID>_UID_SIDADM', 'UID SIDADM', 'host', 'SO', 'input', 'string', 'y');
 insert into xhanaparameter (parameterversion, parameter, info, scope, arc, iotype, valuetype, mandatory) 
  values ('1.0', 'PF4SH_TO_NET_MACS1', 'MAC Adresse des Toolservers', 'host','Toolserver', 'both', 'string', 'y');
 insert into xhanaparameter (parameterversion, parameter, info, scope, arc, iotype, valuetype, mandatory) 
- values ('1.0', 'PF4SH_NAS_<DC>', 'NAS Datacenter', 'host', 'NetApp', 'both', 'string', 'y');
+ values ('1.0', 'PF4SH_NAS_<DC>', 'NAS Datacenter', 'host', 'NetApp', 'input', 'string', 'y');
 insert into xhanaparameter (parameterversion, parameter, info, scope, arc, iotype, valuetype, mandatory) 
- values ('1.0', 'PF4SH_<ARC>_NET_MACS<ID>_<DC>', 'MAC Adresse des Host', 'host', 'SO', 'both', 'string', 'y');
+ values ('1.0', 'PF4SH_<ARC>_NET_MACS<ID>_<DC>', 'MAC Adresse des Host', 'host', 'SO', 'output', 'string', 'y');
 insert into xhanaparameter (parameterversion, parameter, info, scope, arc, iotype, valuetype, mandatory) 
  values ('1.0', 'PF4SH_ISCSI_HOSTNAMES_<ID>', 'Hosts with ISCSI Devices', 'host', 'MajorityMaker', 'both', 'string', 'y');
 insert into xhanaparameter (parameterversion, parameter, info, scope, arc, iotype, valuetype, mandatory) 
@@ -78,11 +78,11 @@ insert into xHANAGENERAL (parameterversion, parameter, solutionversion, sid, arc
   values ('1.2', 'PF4SH_SAPREPO_VERSION', 'BWonHANA', 'Y04', 'SO', 'both', 'BWoH_Release_3');
 
 insert into xHANA_SID_PARA (sid, parameterversion, parameter, value, arc, iotype) 
-  values ('Y04', '1.0', 'PF4SH_<ARC>_<ID>_UID_SIDADM', '6500', 'SO', 'both');
+  values ('Y04', '1.0', 'PF4SH_<ARC>_<ID>_UID_SIDADM', '6500', 'SO', 'input');
 insert into xHANA_SID_PARA (sid, parameterversion, parameter, value, arc, iotype) 
-  values ('Y04', '1.2', 'PF4SH_<ARC>_<ID>_UID_SIDADM', '6500', 'SO', 'both');
+  values ('Y04', '1.2', 'PF4SH_<ARC>_<ID>_UID_SIDADM', '6500', 'SO', 'input');
 insert into xHANA_SID_PARA (sid, parameterversion, parameter, value, arc, iotype) 
-  values ('Netapp01', '1.0', 'PF4SH_NAS_<DC>', 'DC1', 'NetApp', 'both');
+  values ('Netapp01', '1.0', 'PF4SH_NAS_<DC>', 'DC1', 'NetApp', 'input');
 insert into xHANA_SID_PARA (sid, parameterversion, parameter, value, arc, iotype) 
   values ('Toolserver', '1.0', 'PF4SH_TO_NET_MACS1', 'A:B:C:D:E:F', 'Toolserver', 'both');
 

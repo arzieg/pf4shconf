@@ -273,42 +273,40 @@ fn add_xhana_general(
     piotype: &str,
     pvalue: &str,
 ) -> XHanaGeneralTable {
-    
     use schema::xhanageneral;
     use schema::xhanageneral::dsl::*;
 
     let new_xhg = XHanaGeneralInsert {
-        parameterversion : pparameterversion,
-        parameter : pparameter,
-        solutionversion : psolutionversion,
-        sid : psid,
-        arc : parc,
-        iotype : piotype,
+        parameterversion: pparameterversion,
+        parameter: pparameter,
+        solutionversion: psolutionversion,
+        sid: psid,
+        arc: parc,
+        iotype: piotype,
         value: match pvalue {
             "EMPTY" => "",
             _ => pvalue,
         },
     };
 
-
     diesel::insert_into(xhanageneral)
-    .values(&new_xhg)
-    .on_conflict((
-        xhanageneral::parameterversion,
-        xhanageneral::parameter,
-        xhanageneral::solutionversion,
-    ))
-    .do_update()
-    .set(&new_xhg)
-    .get_result(conn)
-    .expect("Error saving new parameter string")
-
+        .values(&new_xhg)
+        .on_conflict((
+            xhanageneral::parameterversion,
+            xhanageneral::parameter,
+            xhanageneral::solutionversion,
+        ))
+        .do_update()
+        .set(&new_xhg)
+        .get_result(conn)
+        .expect("Error saving new parameter string")
 }
 
 pub fn add_xhana_config(
     conn: &PgConnection,
     pparameterversion: &str,
     pparameter: &str,
+    psolutionversion: &str,
     psid: &str,
     phostname: &str,
     pdcid: &str,
@@ -319,32 +317,37 @@ pub fn add_xhana_config(
     use schema::xhanageneral::dsl::*;
     use schema::xhanahost::dsl::*;
     use schema::xhanaparameter::dsl::*;
-    use schema::xhana_solution_sid::dsl::*;
+    use schema::xhanasolution::dsl::*;
 
-    use schema::xhana_solution_sid;
+    // use schema::xhanasolution;
 
+    /*
     println!("in parameterversion {:?}", &pparameterversion);
     println!("in parameter {:?}", &pparameter);
     println!("in sid {:?}", &psid);
     println!("in hostname {:?}", &phostname);
     println!("in dcid {:?}", &pdcid);
     println!("in value {:?}", &pvalue);
+    */
 
     let xhp = xhanaparameter
         .filter(schema::xhanaparameter::dsl::parameter.eq(&pparameter))
         .filter(schema::xhanaparameter::dsl::parameterversion.eq(&pparameterversion))
-        .filter(schema::xhanaparameter::dsl::iotype.eq("both"))
+        .filter(
+            schema::xhanaparameter::dsl::iotype
+                .eq("input")
+                .or(schema::xhanaparameter::dsl::iotype.eq("both")),
+        )
         .load::<XHanaParameterTable>(conn)
         .expect("Error in Query xhanaparameter");
 
-    let xhs = xhana_solution_sid.select(xhana_solution_sid::solutionversion)
-        .filter(schema::xhana_solution_sid::dsl::sid.eq(&psid))
-        .distinct()
-        .first::<String>(conn)
-        .expect("Error in Query xhana_solution_sid");
-    
-    println!("xhs = {}", xhs);
-        
+    /*
+        let xhs = xhana_solution_sid.select(xhana_solution_sid::solutionversion)
+            .filter(schema::xhana_solution_sid::dsl::sid.eq(&psid))
+            .distinct()
+            .first::<String>(conn)
+            .expect("Error in Query xhana_solution_sid");
+    */
     for i in xhp {
         println!("Parameterversion: {:?}", i.parameterversion);
         println!("Parameter: {:?}", i.parameter);
@@ -352,27 +355,43 @@ pub fn add_xhana_config(
         println!("Scope: {:?}", i.scope);
         println!("IOtype: {:?}", i.iotype);
         println!("arc: {:?}", i.arc);
-        println!("Mandatory: {:?}", i.mandatory);    
+        println!("Mandatory: {:?}", i.mandatory);
+        println!("Solutionversion: {:?}", psolutionversion);
+
+        if i.scope == "general" {
+            if psolutionversion != "EMPTY" {
+                let xhs = xhanasolution
+                    .count()
+                    .filter(schema::xhanasolution::dsl::solutionversion.eq(&psolutionversion))
+                    .get_result::<i64>(conn)
+                    .expect("Error in Query count xhanasolution");
+
+                println!("xhs={}",xhs);
+
+                if xhs > 0 {
+                    add_xhana_general(
+                        conn,
+                        &*i.parameterversion,
+                        &*i.parameter,
+                        &psolutionversion,
+                        psid,
+                        &*i.arc,
+                        &*i.iotype,
+                        pvalue,
+                    );
+                } else {
+                    panic!("Sorry Solution {:?} is not definied!", &psolutionversion)
+                };
+            } else {
+                panic!("You will set a value of a general parameter but a solution is not definied!")
+            }
+        }
 
         // add entry in xhanageneral
         // &* wandelt String in &str um
-        add_xhana_general(conn, &*i.parameterversion, &*i.parameter, &*xhs, 
-            psid, &*i.arc, &*i.iotype, pvalue);
+    }
 
-    } 
-
-    
     // fill xhanageneral
-    
-
-
-
-
-
-
-
-
-
 }
 
 /*

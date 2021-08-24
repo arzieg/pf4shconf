@@ -228,6 +228,14 @@ subcommands:
                         required: false
                         min_values: 1
                         max_values: 1
+                    - solution:
+                        short: o
+                        long: solution
+                        multiple: false
+                        help: Solution (only used by generic variables)
+                        required: false
+                        min_values: 1
+                        max_values: 1
                     - hostname:
                         short: h
                         long: hostname
