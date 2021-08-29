@@ -5,11 +5,12 @@ delete from xHANA_SID_HOST;
 delete from xHANAGENERAL;
 delete from xHANA_SOLUTION_SID;
 delete from xHANAPARAMETER;
+delete from xHANAHOST;
 delete from xHANADATACENTER;
 delete from xHANASOLUTION;
 delete from xHANAARC;
 delete from xHANASID;
-delete from xHANAHOST;
+
 
 
 insert into xhanadatacenter (dcid, name) values (1, 'DC1');
@@ -52,6 +53,13 @@ insert into xhanaparameter (parameterversion, parameter, info, scope, arc, iotyp
  values ('1.0', 'PF4SH_ISCSI_HOSTNAMES_<ID>', 'Hosts with ISCSI Devices', 'host', 'SO', 'both', 'string', 'y');
 insert into xhanaparameter (parameterversion, parameter, info, scope, arc, iotype, valuetype, mandatory) 
  values ('1.0', 'PF4SH_ISCSI_TARGET', 'ISCSI Server', 'host', 'ISCSI', 'both', 'string', 'y');
+insert into xhanaparameter (parameterversion, parameter, info, scope, arc, iotype, valuetype, mandatory) 
+ values ('1.0', 'PF4SH_<ARC>_<ID>_HANA_SID', 'HANA SID', 'sap', 'SO', 'input', 'string', 'y');
+insert into xhanaparameter (parameterversion, parameter, info, scope, arc, iotype, valuetype, mandatory) 
+ values ('1.0', 'PF4SH_<ARC>_<ID>_HANA_INR', 'HANA SystemNR', 'sap', 'SO', 'input', 'string', 'y');
+insert into xhanaparameter (parameterversion, parameter, info, scope, arc, iotype, valuetype, mandatory) 
+ values ('1.2', 'PF4SH_<ARC>_<ID>_HANA_INR', 'HANA SystemNR', 'sap', 'SU', 'input', 'string', 'y');
+
 
 insert into xhanasolution (solutionversion) values ('BWonHANA');
 insert into xhanasolution (solutionversion) values ('S4HANA');
@@ -86,18 +94,18 @@ insert into xHANA_SID_PARA (sid, parameterversion, parameter, value, arc, iotype
 insert into xHANA_SID_PARA (sid, parameterversion, parameter, value, arc, iotype) 
   values ('Toolserver', '1.0', 'PF4SH_TO_NET_MACS1', 'A:B:C:D:E:F', 'Toolserver', 'both');
 
-insert into xHANAHOST (hostname) values ('hdb10y04-0001');
-insert into xHANAHOST (hostname) values ('hdb10y04-0002');
-insert into xHANAHOST (hostname) values ('laszis158');
-insert into xHANAHOST (hostname) values ('laszis159');
+insert into xHANAHOST (hostname, dcid) values ('hdb10y04-0001', 1);
+insert into xHANAHOST (hostname, dcid) values ('hdb10y04-0002', 1);
+insert into xHANAHOST (hostname, dcid) values ('laszis158', 3);
+insert into xHANAHOST (hostname, dcid) values ('laszis159', 3);
 
 
-insert into xHANA_HOST_PARA (hostname, parameterversion, dcid, parameter, arc, value, iotype) 
-  values ('hdb10y04-0001', '1.0', '1', 'PF4SH_ISCSI_HOSTNAMES_<ID>', 'SO','hdb10y04-0001', 'both');
-insert into xHANA_HOST_PARA (hostname, parameterversion, dcid, parameter, arc, value, iotype) 
-  values ('laszis158', '1.0', '3', 'PF4SH_ISCSI_HOSTNAMES_<ID>', 'MajorityMaker', 'laszis158', 'both');
-insert into xHANA_HOST_PARA (hostname, parameterversion, dcid, parameter, arc, value, iotype) 
-  values ('laszis159', '1.0', '3', 'PF4SH_ISCSI_TARGET', 'ISCSI', 'laszis159', 'both');
+insert into xHANA_HOST_PARA (hostname, parameterversion, parameter, arc, value, iotype) 
+  values ('hdb10y04-0001', '1.0', 'PF4SH_<ARC>_<ID>_UID_SIDADM', 'SO','hdb10y04-0001', 'input');
+insert into xHANA_HOST_PARA (hostname, parameterversion, parameter, arc, value, iotype) 
+  values ('laszis158', '1.0', 'PF4SH_ISCSI_HOSTNAMES_<ID>', 'MajorityMaker', 'laszis158', 'both');
+insert into xHANA_HOST_PARA (hostname, parameterversion, parameter, arc, value, iotype) 
+  values ('laszis159', '1.0', 'PF4SH_ISCSI_TARGET', 'ISCSI', 'laszis159', 'both');
 
 insert into xHANA_SID_HOST (solutionversion, sid, hostname) 
  values ('BWonHANA', 'Y04', 'hdb10y04-0001');

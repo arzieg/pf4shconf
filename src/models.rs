@@ -55,6 +55,7 @@ pub struct XHanaDatacenterInsert<'a> {
 #[table_name="xhanahost"]
 pub struct XHanaHostInsert<'a> {
     pub hostname: &'a str,
+    pub dcid: &'a i32,
 }
 
 #[derive(Insertable, AsChangeset)]
@@ -90,7 +91,6 @@ pub struct XHanaSIDParaInsert<'a> {
 pub struct XHanaHostParaInsert<'a> {
     pub hostname: &'a str,
     pub parameterversion: &'a str,
-    pub dcid: &'a i32,
     pub arc: &'a str,
     pub parameter: &'a str,
     pub iotype: &'a str,
@@ -136,6 +136,7 @@ pub struct XHanaDatacenterTable {
 #[derive(Queryable)]
 pub struct XHanaHostTable {
     pub hostname: String,
+    pub dcid: i32,
 }
 
 #[derive(Queryable)]
@@ -167,9 +168,8 @@ pub struct XHanaSIDHostTable {
 pub struct XHanaHostParaTable {
     pub hostname: String,
     pub parameterversion: String,
-    pub dcid: i32,
     pub arc: String,
-    pub parameter: Option<String>,
+    pub parameter: String,
     pub iotype: String,
     pub value: Option<String>,
 }

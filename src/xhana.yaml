@@ -244,14 +244,6 @@ subcommands:
                         required: false
                         min_values: 1
                         max_values: 1
-                    - dcid:
-                        short: i
-                        long: dcid
-                        multiple: false
-                        help: ID of the datacenter
-                        required: false
-                        min_values: 1
-                        max_values: 1
                     - value:
                         short: v
                         long: value

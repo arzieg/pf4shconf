@@ -2,7 +2,6 @@ table! {
     xhana_host_para (hostname, parameterversion, parameter, arc) {
         hostname -> Varchar,
         parameterversion -> Varchar,
-        dcid -> Nullable<Int4>,
         arc -> Varchar,
         parameter -> Varchar,
         iotype -> Varchar,
@@ -66,6 +65,7 @@ table! {
 table! {
     xhanahost (hostname) {
         hostname -> Varchar,
+        dcid -> Int4,
     }
 }
 
@@ -95,7 +95,6 @@ table! {
     }
 }
 
-joinable!(xhana_host_para -> xhanadatacenter (dcid));
 joinable!(xhana_host_para -> xhanahost (hostname));
 joinable!(xhana_sid_host -> xhanahost (hostname));
 joinable!(xhana_sid_host -> xhanasid (sid));
@@ -104,6 +103,7 @@ joinable!(xhana_sid_para -> xhanasid (sid));
 joinable!(xhana_solution_sid -> xhanaarc (arc));
 joinable!(xhana_solution_sid -> xhanasolution (solutionversion));
 joinable!(xhanageneral -> xhanasolution (solutionversion));
+joinable!(xhanahost -> xhanadatacenter (dcid));
 joinable!(xhanaparameter -> xhanaarc (arc));
 
 allow_tables_to_appear_in_same_query!(

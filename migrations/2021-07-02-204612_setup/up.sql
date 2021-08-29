@@ -59,7 +59,8 @@ CREATE TABLE xHANADATACENTER (
 
 -- Tabelle der Hostnamen
 CREATE TABLE xHANAHOST (
-  hostname VARCHAR NOT NULL PRIMARY KEY UNIQUE
+  hostname VARCHAR NOT NULL PRIMARY KEY UNIQUE,
+  dcid INTEGER NOT NULL REFERENCES xHANADATACENTER
 );
 
 
@@ -121,13 +122,13 @@ CREATE TABLE xHANA_SID_HOST (
 CREATE TABLE xHANA_HOST_PARA (
   hostname VARCHAR NOT NULL REFERENCES xHANAHOST,
   parameterversion VARCHAR NOT NULL, 
-  dcid INTEGER REFERENCES xHANADATACENTER,
+  -- dcid INTEGER NOT NULL REFERENCES xHANADATACENTER,
   arc VARCHAR NOT NULL,
-  parameter VARCHAR, 
+  parameter VARCHAR NOT NULL, 
   iotype VARCHAR NOT NULL,
   value VARCHAR,
-  PRIMARY KEY (hostname, parameterversion, parameter,arc),
-  FOREIGN KEY (parameterversion, parameter,arc, iotype) REFERENCES xHANAPARAMETER (parameterversion, parameter,arc, iotype)
+  PRIMARY KEY (hostname, parameterversion, parameter, arc),
+  FOREIGN KEY (parameterversion, parameter, arc, iotype) REFERENCES xHANAPARAMETER (parameterversion, parameter, arc, iotype)
 );
 
 -- xHANAGENERAL
