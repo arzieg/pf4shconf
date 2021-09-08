@@ -72,11 +72,13 @@ fn main() {
                         _ => parameter_matches.value_of("tag").unwrap(),
                     };
 
+                    /*
                     println!("Solutionversion: {}", solutionversion);
                     println!("SID: {}", sid);
                     println!("sidname: {}", sidname);
                     println!("arctype: {}", arctype);
                     println!("tag: {}", tag);
+                    */
                     add_xhanasid(&connection, &sid, &sidname);
                     add_xhanasolution(&connection, &solutionversion);
                     add_xhana_solution_sid(&connection, &solutionversion, &sid, &arctype, &tag);

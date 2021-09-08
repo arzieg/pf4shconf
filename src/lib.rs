@@ -76,20 +76,6 @@ pub fn add_xhanaparameter<'a>(
         .expect("Error savong new parameter string")
 }
 
-/*
-pub fn query_hanaparameter<'a>(conn: &PgConnection, pversion: &str, pparameter: &str) {
-    use schema::xhanaparameter::dsl::*;
-
-    println!("VERSION = {}", &pversion);
-
-    let xhp = xhanaparameter
-        .filter(version.eq(&pversion))
-        .filter(version.eq(&pparameter))
-        .get_results::<XHanaParameterTable>(conn)
-        .expect("Error loading parameters");
-}
-*/
-
 // Add HANA Architecture
 // Save dataset in table xhanaarc
 pub fn add_xhanaarc<'a>(conn: &PgConnection, arc: &'a str) -> XHanaArcTable {
