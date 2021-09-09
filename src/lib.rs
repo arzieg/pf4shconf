@@ -205,6 +205,7 @@ pub fn add_xhana_sid_host<'a>(
     psid: &'a str,
     phostname: &'a str,
     pdcid: &'a str,
+    parc: &'a str,
 ) -> XHanaSIDHostTable {
     use schema::xhana_sid_host;
     use schema::xhana_sid_host::dsl::*;
@@ -233,6 +234,7 @@ pub fn add_xhana_sid_host<'a>(
             solutionversion: i_str,
             sid: psid,
             hostname: phostname,
+            arc: parc,
         };
 
         diesel::insert_into(xhana_sid_host)
@@ -434,11 +436,29 @@ pub fn add_xhana_config(
         }
         if i.scope == "host" {
             if phostname != "EMPTY" {
+                use schema::xhana_sid_host::dsl::*;
+                let xhs = xhana_sid_host
+                    .select(arc)
+                    .filter(schema::xhana_sid_host::dsl::hostname.eq(&phostname))
+                    .distinct()
+                    .load::<String>(conn)
+                    .expect("Error in Query xhana_sid_host");
+                // when no returnvalue then panic
+                if xhs.len() == 0 {
+                    panic!("Hostname in Table xhana_sid_host not found!")
+                }
+
+                // Vec<String> in &str umwandeln
+                let mut xhs_arc = "";
+                for j in xhs.iter() {
+                    xhs_arc = j.as_str();
+                }
+
                 add_xhana_host_para(
                     conn,
                     phostname,
                     &*i.parameterversion,
-                    &*i.arc,
+                    &*xhs_arc,
                     &*i.parameter,
                     &*i.iotype,
                     pvalue,

@@ -96,9 +96,12 @@ fn main() {
                     let sid = parameter_matches.value_of("sid").unwrap();
                     let hostname = parameter_matches.value_of("hostname").unwrap();
                     let dcid = parameter_matches.value_of("dcid").unwrap();
-                    // println!("SID: {}", sid);
-                    // println!("hostname: {}", hostname);
-                    add_xhana_sid_host(&connection, &sid, &hostname, &dcid);
+                    let arc = parameter_matches.value_of("arctype").unwrap();
+                    println!("SID: {}", sid);
+                    println!("hostname: {}", hostname);
+                    println!("dcid: {}", dcid);
+                    println!("arc: {}", arc);
+                    add_xhana_sid_host(&connection, &sid, &hostname, &dcid, &arc);
                 }
                 Some(("config", parameter_matches)) => {
                     let parameterversion = parameter_matches.value_of("parameterversion").unwrap();

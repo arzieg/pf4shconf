@@ -277,6 +277,23 @@ subcommands:
                         required: true
                         min_values: 1
                         max_values: 1
+                    - arctype:
+                        short: a
+                        long: arctype
+                        help: Architecturetype - ScaleOutReplicated (SOR), ScaleOut (SO), ScaleUpReplicated (SUR), ScaleUp (SU), MajorityMaker, Toolserver, ISCSI-Server (ISCSI)
+                        takes_value: true
+                        default_value: SOR
+                        required: true
+                        possible_values:
+                            - SO
+                            - SOR
+                            - SU
+                            - SUR
+                            - ISCSI
+                            - MajorityMaker
+                            - NetApp
+                            - Toolserver
+                            - general
             - model:
                 about: Load model value file  
                 # Subcommand args are exactly like App args

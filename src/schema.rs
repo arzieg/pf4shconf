@@ -14,6 +14,7 @@ table! {
         solutionversion -> Varchar,
         sid -> Varchar,
         hostname -> Varchar,
+        arc -> Varchar,
     }
 }
 
@@ -96,6 +97,7 @@ table! {
 }
 
 joinable!(xhana_host_para -> xhanahost (hostname));
+joinable!(xhana_sid_host -> xhanaarc (arc));
 joinable!(xhana_sid_host -> xhanahost (hostname));
 joinable!(xhana_sid_host -> xhanasid (sid));
 joinable!(xhana_sid_host -> xhanasolution (solutionversion));
