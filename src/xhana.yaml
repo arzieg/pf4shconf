@@ -214,7 +214,7 @@ subcommands:
                         short: n
                         long: parameter
                         multiple: false
-                        help: Parameter
+                        help: Name of the parameter
                         required: true
                         min_values: 1
                         max_values: 1
@@ -230,7 +230,7 @@ subcommands:
                         short: o
                         long: solution
                         multiple: false
-                        help: Solution (only used by generic variables)
+                        help: Name of the solution (only used by generic variables)
                         required: false
                         min_values: 1
                         max_values: 1

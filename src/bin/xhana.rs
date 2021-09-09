@@ -40,8 +40,8 @@ fn main() {
                     add_xhanaparameter(
                         &connection,
                         &version,
-                        &info,
                         &parameter,
+                        &info,
                         &scope,
                         &arctype,
                         &iotype,
