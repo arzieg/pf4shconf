@@ -1,9 +1,24 @@
+//! # xhana
+//!
+//! Programm, um das Datenmodell über die Kommandozeile zu bearbeiten.
+//!
+//! Folgende Hauptfunktionen stehen zur Verfügung
+//! * add: Hinzufügen von Werten in das Datenmodell.
+//! * future use: delete: Löschen von Wertden im Datenmodell
+//!         
+//! Mit dem Befehl add werden Daten in das Modell hinzugefügt oder aktualisiert.
+//! * parametertemplate:    Pfelge der Parametertemplatetabelle
+//! * architecture:         Definition von Architekturen
+//! * solution:             Definition von Lösungen
+//! * datacenter:           Definition von Standorten der Server
+//! * host:                 Pfelge der Hostinformationen
+//! * config:               Pflege der Beziehungen zw. den Objekten und Parametertemplates
+//! * future use: model:    Laden eines Modells
+
 extern crate diesel;
 extern crate pf4shconf;
 
 use self::pf4shconf::*;
-// use std::io;
-// use clap::{load_yaml, App, AppSettings, Arg};
 use clap::{load_yaml, App};
 
 fn main() {

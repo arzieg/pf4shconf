@@ -3,26 +3,20 @@
 --           dann die down.sql und up.sql pflegen
 --           diesel migration run
 
---  Es gibt zwei Schlüsselfelder für die Versionierung. 
---    1. SID  = HANA SID 
---    2. VER  = Versionsstring
--- Tabellen
---   xHANAGENERAL     - generelle Parameter für die Gesamtsystemumgebung
---   xHANAENVIRONMENT - maschinenspezifische Parameter in der PF4SH_POST.conf
---*   xHANAARC         - Architektur (ScaleUp oder ScaleOut)
---*   xHANAVERSION     - Versionstabelle je SID
---*   xHANAPARAMETER   - Parametertabelle 
-
--- xHANAGENERAL
--- Abgespeichert werden hier die allgemeinen Parameter für die Gesamtumgebung
---   Key: SID, VERSION
---CREATE TABLE xHANAGENERAL (
---  id SERIAL PRIMARY KEY,
---  sid VARCHAR NOT NULL,
---  version VARCHAR NOT NULL,
---  parameter VARCHAR NOT NULL,
---  value VARCHAR
---);
+-- Wo möglich, gibt es ein Versionstring
+-- 
+-- Folgende Tabellen werden angelegt: 
+--   xHANAARC           - Architekturtypen
+--   xHANASOLUTION      - Name der Lösung
+--   xHANADATACENTER    - Name der Datacenter
+--   xHANASID           - SID des Systems
+--   xHANAHOST          - Tabelle der Server
+--   xHANAPARAMETER     - Templatetabelle der Parameter
+--   xHANA_SID_PARA     - SID spezifische Parameter
+--   xHANA_SOLUTION_SID - Mappingtabelle SID zur Lösung
+--   xHANA_SID_HOST     - Mappingtabelle SID zu Server
+--   xHANA_HOST_PARA    - HOST spezifische Parameter
+--   xHANAGENERAL       - Allgemeine Parameter je Lösung
 
 -- xHANAARC
 -- Tabelle der Architekturtypen
@@ -32,45 +26,45 @@
 --  SUR = ScaleUpReplication
 --  SU = ScaleUp
 --  ISCSI = iscsi Server
---  MajoritzMaker = MajorityMaker
+--  MajorityMaker = MajorityMaker
 --  Toolserver = Toolserver
 --  NetApp = NetApp
 CREATE TABLE xHANAARC (
   arc VARCHAR NOT NULL PRIMARY KEY
 );
--- Tabelle der HANA Lösungen. Dies ist ein Freitextfeld
+
+-- Tabelle der Lösungen. Dies ist ein Freitextfeld
 CREATE TABLE xHANASOLUTION (
   solutionversion VARCHAR NOT NULL PRIMARY KEY
 );
 
--- Tabelle der SIDs (hierzu gehören z.B. auch ISCSI-Systeme und nicht nur SAP Systeme) + 
+-- Tabelle der SIDs, d.h. jedes System hat eine SID (nicht nur die SAP Systeme)
 -- Freitext als Beschreibung
 CREATE TABLE xHANASID (
   sid VARCHAR NOT NULL PRIMARY KEY,
   name VARCHAR
 );
 
--- xHANADATACENTER
--- Datacenter IDs
+-- Datacenter IDs und Name als Freitext
 CREATE TABLE xHANADATACENTER (
   dcid INTEGER NOT NULL PRIMARY KEY UNIQUE,
   name VARCHAR NOT NULL
 );
 
--- Tabelle der Hostnamen
+-- Tabelle der Hostnamen und wo sie stehen
 CREATE TABLE xHANAHOST (
   hostname VARCHAR NOT NULL PRIMARY KEY UNIQUE,
   dcid INTEGER NOT NULL REFERENCES xHANADATACENTER
 );
 
 
--- xHANAPARAMETER
 -- xHANA Parametertabelle. In dieser Tabelle stehen die auszufüllenden Parametertemplates.
 --   parameterversion = Version des Parametertemplates
 --   parameter = Parametertemplate
 --   info = Erklärungstext zum Parameter
---   arc = Architektur
---   iotype = input / output / both?
+--   scope = Gruppe der Parameter, mögliche Schlüsselwörter: general, host, sap
+--   arc = Architekturtyp
+--   iotype = Eingabe, Ausgabe oder Beides, Schlüsselwörter: input, output, both
 --   valuetype = erwarteter Wert (wird aktuell nicht abgefragt)
 --   mandatory = (J)a / (N)ein
 CREATE TABLE xHANAPARAMETER (
@@ -85,7 +79,7 @@ CREATE TABLE xHANAPARAMETER (
   primary key(parameterversion, parameter, arc, iotype)
 );
  
--- Verbindungstabelle SID zu Parametern
+-- Hier werden die SID spezifischen Parameter gespeichert
 CREATE TABLE xHANA_SID_PARA (
   sid VARCHAR NOT NULL REFERENCES xHANASID,
   parameterversion VARCHAR NOT NULL, 
@@ -97,11 +91,7 @@ CREATE TABLE xHANA_SID_PARA (
   FOREIGN KEY (parameterversion, parameter, arc, iotype) REFERENCES xHANAPARAMETER (parameterversion, parameter, arc, iotype)
 );
 
--- Verbindungstabelle Solution zu SID
---  Solutionversion 
---  SID
---  Architekturtyp
---  Tag (Freitextfeld)
+-- Mappingtabelle Solution zu SID
 CREATE TABLE xHANA_SOLUTION_SID (
   solutionversion VARCHAR NOT NULL REFERENCES xHANASOLUTION, 
   sid VARCHAR NOT NULL,
@@ -119,11 +109,10 @@ CREATE TABLE xHANA_SID_HOST (
   primary key(solutionversion, sid, hostname)
 );
 
--- Mappingtabelle Host zu Parametertemplate
+-- Hostspezifische Parameter
 CREATE TABLE xHANA_HOST_PARA (
   hostname VARCHAR NOT NULL REFERENCES xHANAHOST,
   parameterversion VARCHAR NOT NULL, 
-  -- dcid INTEGER NOT NULL REFERENCES xHANADATACENTER,
   arc VARCHAR NOT NULL,
   parameter VARCHAR NOT NULL, 
   iotype VARCHAR NOT NULL,
@@ -132,8 +121,7 @@ CREATE TABLE xHANA_HOST_PARA (
   FOREIGN KEY (parameterversion, parameter, arc, iotype) REFERENCES xHANAPARAMETER (parameterversion, parameter, arc, iotype)
 );
 
--- xHANAGENERAL
--- allg. Parameter
+-- Lösungsspezifische, allgemeine Parameter
 CREATE TABLE xHANAGENERAL (
   parameterversion VARCHAR NOT NULL,
   parameter VARCHAR NOT NULL, 
