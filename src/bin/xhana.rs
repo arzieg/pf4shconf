@@ -6,7 +6,8 @@
 //! * add: Hinzufügen von Werten in das Datenmodell.
 //! * future use: delete: Löschen von Wertden im Datenmodell
 //!         
-//! Mit dem Befehl add werden Daten in das Modell hinzugefügt oder aktualisiert.
+//! Mit dem Befehl add werden Daten in das Modell hinzugefügt oder aktualisiert, hierbei ist
+//! eine der folgenden Unterfunktionen verwendbar:
 //! * parametertemplate:    Pfelge der Parametertemplatetabelle
 //! * architecture:         Definition von Architekturen
 //! * solution:             Definition von Lösungen
@@ -16,9 +17,9 @@
 //! * future use: model:    Laden eines Modells
 
 extern crate diesel;
-extern crate pf4shconf;
+extern crate xhanaconf;
 
-use self::pf4shconf::*;
+use self::xhanaconf::*;
 use clap::{load_yaml, App};
 
 fn main() {

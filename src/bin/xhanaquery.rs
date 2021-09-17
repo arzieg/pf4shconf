@@ -24,11 +24,11 @@ extern crate diesel;
 //:
 //:-host
 //:  xHANAENVIRONMENT
-extern crate pf4shconf;
+extern crate xhanaconf;
 
 use self::diesel::prelude::*;
 use self::models::*;
-use self::pf4shconf::*;
+use self::xhanaconf::*;
 use clap::{load_yaml, App};
 
 fn main() {

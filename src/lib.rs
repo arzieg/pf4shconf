@@ -1,4 +1,12 @@
 // Postgres starten: pg_ctl -D /var/lib/pgsql/data -l logfile start
+//! xhanaconf
+//!
+//! Bibliothek für das Programm xhana.
+//! Die Bibliothek setzt voraus, dass DIESEL bereits konfiguriert ist.
+//!
+//! Es gibt eine Datei ~/.env mit folgendem Inhalt:
+//!
+//!   DATABASE_URL=postges://\<username\>:\<passwort\>@\<host\>/\<Datenbank\>
 pub mod models;
 pub mod schema;
 
@@ -17,16 +25,13 @@ use dotenv::dotenv;
 use std::env;
 use std::str;
 
-// use std::error::Error;
-// use std::ffi::OsString;
-// use std::process;
-
 // Allgemeine Funktionen
 // https://stackoverflow.com/questions/57063777/remove-all-whitespace-from-string
 fn remove_whitespace(s: String) -> String {
     s.chars().filter(|c| !c.is_whitespace()).collect()
 }
 
+/// Aufbau einer Datenbankverbindung
 pub fn establish_connection() -> PgConnection {
     dotenv().ok();
 
@@ -34,7 +39,7 @@ pub fn establish_connection() -> PgConnection {
     PgConnection::establish(&database_url).expect(&format!("Error connecting to {}", database_url))
 }
 
-// Add HANA Parametertemplate
+/// Pflege der Parametertemplatetabelle
 // Save dataset in table xhanaparameter
 pub fn add_xhanaparameter<'a>(
     conn: &PgConnection,
@@ -76,7 +81,7 @@ pub fn add_xhanaparameter<'a>(
         .expect("Error savong new parameter string")
 }
 
-// Add HANA Architecture
+/// Hinzufügen eines Architekturtyps
 // Save dataset in table xhanaarc
 pub fn add_xhanaarc<'a>(conn: &PgConnection, arc: &'a str) -> XHanaArcTable {
     use schema::xhanaarc;
@@ -92,7 +97,7 @@ pub fn add_xhanaarc<'a>(conn: &PgConnection, arc: &'a str) -> XHanaArcTable {
         .expect("Error saving new parameter in table xhanaarc")
 }
 
-// Add HANA Solutionname
+/// Hinzufügen eines Lösungsnamen
 // Save dataset in table xhanasolution
 pub fn add_xhanasolution<'a>(conn: &PgConnection, solutionversion: &'a str) -> XHanaSolutionTable {
     use schema::xhanasolution;
@@ -110,7 +115,7 @@ pub fn add_xhanasolution<'a>(conn: &PgConnection, solutionversion: &'a str) -> X
         .expect("Error saving new parameter string")
 }
 
-// Add HANA Datacenter
+/// Hinzufügen eines Datacenternamen
 // Save dataset in table xhanadatacenter
 pub fn add_xhanadc<'a>(conn: &PgConnection, dcid: &'a i32, name: &'a str) -> XHanaDatacenterTable {
     use schema::xhanadatacenter;
@@ -129,7 +134,7 @@ pub fn add_xhanadc<'a>(conn: &PgConnection, dcid: &'a i32, name: &'a str) -> XHa
         .expect("Error savong new parameter string")
 }
 
-// Add HANA SID
+/// Hinzufügen von HANA SID Namen
 // Save dataset in table xhanasid
 pub fn add_xhanasid<'a>(conn: &PgConnection, sid: &'a str, name: &'a str) -> XHanaSIDTable {
     use schema::xhanasid;
@@ -151,7 +156,7 @@ pub fn add_xhanasid<'a>(conn: &PgConnection, sid: &'a str, name: &'a str) -> XHa
         .expect("Error savong new parameter string")
 }
 
-// Add dependency HANA SID<->Solution
+/// Abhängigkeit zwischen HANA SID und einer Lösung definieren
 // Save dataset in table xhana_solution_sid
 
 pub fn add_xhana_solution_sid<'a>(
@@ -182,7 +187,7 @@ pub fn add_xhana_solution_sid<'a>(
         .expect("Error saving new parameter string")
 }
 
-// Helperfunction for add_xhana_sid_host
+/// Hilfsfunktion für add_xhana_sid_host
 pub fn add_xhana_host(conn: &PgConnection, phostname: &str, pdcid: &i32) -> XHanaHostTable {
     use schema::xhanahost;
 
@@ -200,6 +205,7 @@ pub fn add_xhana_host(conn: &PgConnection, phostname: &str, pdcid: &i32) -> XHan
         .expect("Error saving new parameter string")
 }
 
+/// Abhängigkeit zwischen HANA SID und Hostnamen erstellen
 pub fn add_xhana_sid_host<'a>(
     conn: &PgConnection,
     psid: &'a str,
@@ -253,6 +259,7 @@ pub fn add_xhana_sid_host<'a>(
     }
 }
 
+/// Definition von allgemeinen XHANA - Parameterwerten. Wird von add_xhana_config verwendet.
 fn add_xhana_general(
     conn: &PgConnection,
     pparameterversion: &str,
@@ -292,6 +299,7 @@ fn add_xhana_general(
         .expect("Error saving new parameter string")
 }
 
+/// Definition von hostspezifischen Parameterwerten. Wird von add_xhana_config verwendet.
 fn add_xhana_host_para(
     conn: &PgConnection,
     phostname: &str,
@@ -330,6 +338,8 @@ fn add_xhana_host_para(
         .expect("Error saving new parameter string in xhana_host_para!")
 }
 
+/// Definition von SID spezifischen Parameterwerten.
+/// Wird benutzt von add_xhana_config
 fn add_xhana_sid_para(
     conn: &PgConnection,
     psid: &str,
@@ -368,6 +378,7 @@ fn add_xhana_sid_para(
         .expect("Error saving new parameter string in xhana_sid_para!")
 }
 
+/// Hinzufügen eines Konfigurationswertes
 pub fn add_xhana_config(
     conn: &PgConnection,
     pparameterversion: &str,
