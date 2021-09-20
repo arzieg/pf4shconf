@@ -157,7 +157,30 @@ fn main() {
                 _ => unreachable!(),
             }
         }
-        None => println!("No subcommand was used"), // If no subcommand was used it'll match the tuple ("", None)
-        _ => unreachable!(), // If all subcommands are defined above, anything else is unreachabe!()
+        Some(("query", query_matches)) => {
+            // Now we have a reference to push's matches
+            let sid = match query_matches.occurrences_of("sid") {
+                0 => "EMPTY",
+                _ => query_matches.value_of("sid").unwrap(),
+            };
+            let configversion = match query_matches.occurrences_of("configversion") {
+                0 => "EMPTY",
+                _ => query_matches.value_of("configversion").unwrap(),
+            };
+            let architecture = match query_matches.occurrences_of("architecture") {
+                0 => "EMPTY",
+                _ => query_matches.value_of("architecture").unwrap(),
+            };
+            let host = match query_matches.occurrences_of("host") {
+                0 => "EMPTY",
+                _ => query_matches.value_of("host").unwrap(),
+            };
+            println!("SID: {}", sid);
+            println!("Host: {}", host);
+            println!("Configversion: {}", configversion);
+            println!("Architecture: {}", architecture);
+        }
+        None => println!("No parameter was used"),
+        _ => unreachable!(), // If all commands are defined above, anything else is unreachabe!()
     }
 }

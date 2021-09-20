@@ -294,6 +294,7 @@ subcommands:
                             - NetApp
                             - Toolserver
                             - general
+            # ToDo                
             - model:
                 about: Load model value file  
                 # Subcommand args are exactly like App args
@@ -306,3 +307,61 @@ subcommands:
                         required: true
                         min_values: 1
                         max_values: 1
+    # Query has no subcommands
+    - query:
+        about: Query XHANA Configdatabase
+        version: "1.0"
+        author: Arne Ziegler@gmx.net
+        args:
+        # The name of this argument, is 'opt' which will be used to access the value
+        # later in your Rust code
+        - sid:
+            about: Show SID Information  
+            # Subcommand args are exactly like App args
+            help: if only --sid is set, show defined configuration versions, if --sid and -- configversion is set show configuration.
+            short: s
+            long: sid
+            multiple: true
+            takes_value: true
+        - configversion:
+            about: Show Configversions  
+            # Subcommand args are exactly like App args
+            help: set configuration version. Can only be used with --sid. 
+            short: c
+            long: configversion
+            requires: sid
+            multiple: true
+            takes_value: true
+        - architecture:
+            about: Show Architecture  
+            # Subcommand args are exactly like App arg
+            help: Show architecturetype, can only be used as single parameter
+            short: a
+            long: architecture
+            possible_values:
+                    - SO
+                    - SOR
+                    - SU
+                    - SUR
+                    - ISCSI
+                    - MajorityMaker
+                    - NetApp
+                    - Toolserver
+                    - general
+            multiple: true
+            takes_value: true
+            conflicts_with: 
+                - host
+                - configversion
+        - host:
+            about: Show Hostconfiguration  
+            # Subcommand args are exactly like App args
+            help: Show Host(s) configuration, can only be used as single parameter
+            short: h
+            long: host
+            multiple: true
+            takes_value: true
+            conflicts_with: 
+                - sid
+                - configversion
+                - architecture

@@ -9,6 +9,7 @@
 //!   DATABASE_URL=postges://\<username\>:\<passwort\>@\<host\>/\<Datenbank\>
 pub mod models;
 pub mod schema;
+pub mod xhanalib;
 
 extern crate csv;
 extern crate serde;
