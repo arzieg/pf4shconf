@@ -163,7 +163,7 @@ fn main() {
                 0 => "EMPTY",
                 _ => query_matches.value_of("sid").unwrap(),
             };
-            let configversion = match query_matches.occurrences_of("configversion") {
+            let parameterversion = match query_matches.occurrences_of("configversion") {
                 0 => "EMPTY",
                 _ => query_matches.value_of("configversion").unwrap(),
             };
@@ -177,8 +177,10 @@ fn main() {
             };
             println!("SID: {}", sid);
             println!("Host: {}", host);
-            println!("Configversion: {}", configversion);
+            println!("Configversion: {}", parameterversion);
             println!("Architecture: {}", architecture);
+
+            xhanalib::xhanaquerylib::query_xhana_sid(&connection, &sid, &parameterversion);
         }
         None => println!("No parameter was used"),
         _ => unreachable!(), // If all commands are defined above, anything else is unreachabe!()

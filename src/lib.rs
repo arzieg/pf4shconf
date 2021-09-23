@@ -517,3 +517,21 @@ pub fn add_xhana_config(
 
     // fill xhanageneral
 }
+
+pub fn query_xhana_sid(conn: &PgConnection, psid: &str) {
+    use schema::xhanasid::dsl::*;
+    println!("in Function SID = {}", &psid);
+
+    let query_xhanasid = xhanasid
+        .filter(sid.eq(&psid))
+        .load::<XHanaSIDTable>(conn)
+        .expect("Could not find SID in table xhanasid");
+
+    //let debug = diesel::debug_query::<diesel::pg::Pg, _>(&query_xhanasid);
+    //println!("The insert query: {:?}", debug);
+
+    println!("SID  - Name");
+    if query_xhanasid.len() == 0 {
+        panic!("No Version  found")
+    }
+}
