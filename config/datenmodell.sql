@@ -107,11 +107,11 @@ insert into xHANA_HOST_PARA (hostname, parameterversion, parameter, arc, value, 
 insert into xHANA_HOST_PARA (hostname, parameterversion, parameter, arc, value, iotype) 
   values ('iscsisrv01', '1.0', 'PF4SH_ISCSI_TARGET', 'ISCSI', 'iscsisrv01', 'both');
 
-insert into xHANA_SID_HOST (solutionversion, sid, hostname) 
- values ('BWonHANA', 'Z01', 'hana10z01-0001');
-insert into xHANA_SID_HOST (solutionversion, sid, hostname) 
- values ('BWonHANA', 'Z01', 'hana10z01-0002');
-insert into xHANA_SID_HOST (solutionversion, sid, hostname) 
- values ('BWonHANA', 'ISCSIServer', 'iscsisrv01');
+insert into xHANA_SID_HOST (solutionversion, sid, hostname, arc) 
+ values ('BWonHANA', 'Z01', 'hana10z01-0001', 'SOSR');
+insert into xHANA_SID_HOST (solutionversion, sid, hostname, arc) 
+ values ('BWonHANA', 'Z01', 'hana10z01-0002', 'SOSR');
+insert into xHANA_SID_HOST (solutionversion, sid, hostname, arc) 
+ values ('BWonHANA', 'ISCSIServer', 'iscsisrv01', 'ISCSI');
 
 
