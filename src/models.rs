@@ -1,7 +1,7 @@
-use super::schema::*;    // alle Tabellen sollen importiert werden
+use super::schema::*; // alle Tabellen sollen importiert werden
 
-#[derive(Insertable,AsChangeset)]
-#[table_name="xhanageneral"]
+#[derive(Insertable, AsChangeset)]
+#[table_name = "xhanageneral"]
 pub struct XHanaGeneralInsert<'a> {
     pub parameterversion: &'a str,
     pub parameter: &'a str,
@@ -12,8 +12,8 @@ pub struct XHanaGeneralInsert<'a> {
     pub iotype: &'a str,
 }
 
-#[derive(Insertable,AsChangeset)]
-#[table_name="xhanaparameter"]
+#[derive(Insertable, AsChangeset)]
+#[table_name = "xhanaparameter"]
 pub struct XHanaParameterInsert<'a> {
     pub parameterversion: &'a str,
     pub parameter: &'a str,
@@ -25,41 +25,41 @@ pub struct XHanaParameterInsert<'a> {
     pub mandatory: &'a str,
 }
 
-#[derive(Insertable,AsChangeset)]
-#[table_name="xhanaarc"]
+#[derive(Insertable, AsChangeset)]
+#[table_name = "xhanaarc"]
 pub struct XHanaArcInsert<'a> {
     pub arc: &'a str,
 }
 
-#[derive(Insertable,AsChangeset)]
-#[table_name="xhanasolution"]
+#[derive(Insertable, AsChangeset)]
+#[table_name = "xhanasolution"]
 pub struct XHanaSolutionInsert<'a> {
     pub solutionversion: &'a str,
 }
 
-#[derive(Insertable,AsChangeset)]
-#[table_name="xhanasid"]
+#[derive(Insertable, AsChangeset)]
+#[table_name = "xhanasid"]
 pub struct XHanaSIDInsert<'a> {
     pub sid: &'a str,
     pub name: &'a str,
 }
 
 #[derive(Insertable, AsChangeset)]
-#[table_name="xhanadatacenter"]
+#[table_name = "xhanadatacenter"]
 pub struct XHanaDatacenterInsert<'a> {
     pub dcid: &'a i32,
     pub name: &'a str,
 }
 
 #[derive(Insertable, AsChangeset)]
-#[table_name="xhanahost"]
+#[table_name = "xhanahost"]
 pub struct XHanaHostInsert<'a> {
     pub hostname: &'a str,
     pub dcid: &'a i32,
 }
 
 #[derive(Insertable, AsChangeset)]
-#[table_name="xhana_solution_sid"]
+#[table_name = "xhana_solution_sid"]
 pub struct XHanaSolutionSIDInsert<'a> {
     pub solutionversion: &'a str,
     pub sid: &'a str,
@@ -68,33 +68,34 @@ pub struct XHanaSolutionSIDInsert<'a> {
 }
 
 #[derive(Insertable, AsChangeset)]
-#[table_name="xhana_sid_host"]
+#[table_name = "xhana_sid_host"]
 pub struct XHanaSIDHostInsert<'a> {
     pub solutionversion: &'a str,
     pub sid: &'a str,
     pub hostname: &'a str,
+    pub arc: &'a str,
 }
 
 #[derive(Insertable, AsChangeset)]
-#[table_name="xhana_sid_para"]
+#[table_name = "xhana_sid_para"]
 pub struct XHanaSIDParaInsert<'a> {
     pub sid: &'a str,
     pub parameterversion: &'a str,
     pub parameter: &'a str,
     pub value: &'a str,
     pub arc: &'a str,
-    pub iotype: &'a str, 
+    pub iotype: &'a str,
 }
 
 #[derive(Insertable, AsChangeset)]
-#[table_name="xhana_host_para"]
+#[table_name = "xhana_host_para"]
 pub struct XHanaHostParaInsert<'a> {
     pub hostname: &'a str,
     pub parameterversion: &'a str,
     pub arc: &'a str,
     pub parameter: &'a str,
     pub iotype: &'a str,
-    pub value: &'a str, 
+    pub value: &'a str,
 }
 
 // ab hier Queryable
@@ -153,7 +154,7 @@ pub struct XHanaSIDParaTable {
     pub parameterversion: String,
     pub parameter: String,
     pub value: String,
-    pub arc: String, 
+    pub arc: String,
     pub iotype: String,
 }
 
@@ -162,6 +163,7 @@ pub struct XHanaSIDHostTable {
     pub solutionversion: String,
     pub sid: String,
     pub hostname: String,
+    pub arc: String,
 }
 
 #[derive(Queryable)]
@@ -180,7 +182,7 @@ pub struct XHanaGeneralTable {
     pub parameter: String,
     pub solutionversion: String,
     pub sid: String,
-    pub value: String,   
+    pub value: String,
     pub arc: String,
     pub iotype: String,
 }

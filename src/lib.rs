@@ -1,6 +1,15 @@
 // Postgres starten: pg_ctl -D /var/lib/pgsql/data -l logfile start
+//! xhanaconf
+//!
+//! Bibliothek für das Programm xhana.
+//! Die Bibliothek setzt voraus, dass DIESEL bereits konfiguriert ist.
+//!
+//! Es gibt eine Datei ~/.env mit folgendem Inhalt:
+//!
+//!   DATABASE_URL=postges://\<username\>:\<passwort\>@\<host\>/\<Datenbank\>
 pub mod models;
 pub mod schema;
+pub mod xhanalib;
 
 extern crate csv;
 extern crate serde;
@@ -17,16 +26,13 @@ use dotenv::dotenv;
 use std::env;
 use std::str;
 
-use std::error::Error;
-// use std::ffi::OsString;
-// use std::process;
-
 // Allgemeine Funktionen
 // https://stackoverflow.com/questions/57063777/remove-all-whitespace-from-string
 fn remove_whitespace(s: String) -> String {
     s.chars().filter(|c| !c.is_whitespace()).collect()
 }
 
+/// Aufbau einer Datenbankverbindung
 pub fn establish_connection() -> PgConnection {
     dotenv().ok();
 
@@ -34,7 +40,7 @@ pub fn establish_connection() -> PgConnection {
     PgConnection::establish(&database_url).expect(&format!("Error connecting to {}", database_url))
 }
 
-// Add HANA Parametertemplate
+/// Pflege der Parametertemplatetabelle
 // Save dataset in table xhanaparameter
 pub fn add_xhanaparameter<'a>(
     conn: &PgConnection,
@@ -76,21 +82,7 @@ pub fn add_xhanaparameter<'a>(
         .expect("Error savong new parameter string")
 }
 
-/*
-pub fn query_hanaparameter<'a>(conn: &PgConnection, pversion: &str, pparameter: &str) {
-    use schema::xhanaparameter::dsl::*;
-
-    println!("VERSION = {}", &pversion);
-
-    let xhp = xhanaparameter
-        .filter(version.eq(&pversion))
-        .filter(version.eq(&pparameter))
-        .get_results::<XHanaParameterTable>(conn)
-        .expect("Error loading parameters");
-}
-*/
-
-// Add HANA Architecture
+/// Hinzufügen eines Architekturtyps
 // Save dataset in table xhanaarc
 pub fn add_xhanaarc<'a>(conn: &PgConnection, arc: &'a str) -> XHanaArcTable {
     use schema::xhanaarc;
@@ -103,10 +95,10 @@ pub fn add_xhanaarc<'a>(conn: &PgConnection, arc: &'a str) -> XHanaArcTable {
         .do_update()
         .set(&new_xha)
         .get_result(conn)
-        .expect("Error saving new parameter string")
+        .expect("Error saving new parameter in table xhanaarc")
 }
 
-// Add HANA Solutionname
+/// Hinzufügen eines Lösungsnamen
 // Save dataset in table xhanasolution
 pub fn add_xhanasolution<'a>(conn: &PgConnection, solutionversion: &'a str) -> XHanaSolutionTable {
     use schema::xhanasolution;
@@ -124,7 +116,7 @@ pub fn add_xhanasolution<'a>(conn: &PgConnection, solutionversion: &'a str) -> X
         .expect("Error saving new parameter string")
 }
 
-// Add HANA Datacenter
+/// Hinzufügen eines Datacenternamen
 // Save dataset in table xhanadatacenter
 pub fn add_xhanadc<'a>(conn: &PgConnection, dcid: &'a i32, name: &'a str) -> XHanaDatacenterTable {
     use schema::xhanadatacenter;
@@ -143,7 +135,7 @@ pub fn add_xhanadc<'a>(conn: &PgConnection, dcid: &'a i32, name: &'a str) -> XHa
         .expect("Error savong new parameter string")
 }
 
-// Add HANA SID
+/// Hinzufügen von HANA SID Namen
 // Save dataset in table xhanasid
 pub fn add_xhanasid<'a>(conn: &PgConnection, sid: &'a str, name: &'a str) -> XHanaSIDTable {
     use schema::xhanasid;
@@ -165,7 +157,7 @@ pub fn add_xhanasid<'a>(conn: &PgConnection, sid: &'a str, name: &'a str) -> XHa
         .expect("Error savong new parameter string")
 }
 
-// Add dependency HANA SID<->Solution
+/// Abhängigkeit zwischen HANA SID und einer Lösung definieren
 // Save dataset in table xhana_solution_sid
 
 pub fn add_xhana_solution_sid<'a>(
@@ -196,7 +188,7 @@ pub fn add_xhana_solution_sid<'a>(
         .expect("Error saving new parameter string")
 }
 
-// Helperfunction for add_xhana_sid_host
+/// Hilfsfunktion für add_xhana_sid_host
 pub fn add_xhana_host(conn: &PgConnection, phostname: &str, pdcid: &i32) -> XHanaHostTable {
     use schema::xhanahost;
 
@@ -214,33 +206,25 @@ pub fn add_xhana_host(conn: &PgConnection, phostname: &str, pdcid: &i32) -> XHan
         .expect("Error saving new parameter string")
 }
 
+/// Abhängigkeit zwischen HANA SID und Hostnamen erstellen
 pub fn add_xhana_sid_host<'a>(
     conn: &PgConnection,
     psid: &'a str,
     phostname: &'a str,
+    pdcid: &'a str,
+    parc: &'a str,
 ) -> XHanaSIDHostTable {
     use schema::xhana_sid_host;
-    use schema::xhanahost;
     use schema::xhana_sid_host::dsl::*;
     use schema::xhana_solution_sid::dsl::*;
-    use schema::xhanahost::dsl::*;
 
+    let pdcid_i32: i32 = pdcid.parse().unwrap();
     let psolutionversion = xhana_solution_sid
         .select(schema::xhana_solution_sid::dsl::solutionversion)
         .filter(schema::xhana_solution_sid::dsl::sid.eq(&psid))
         .distinct()
         .load::<String>(conn)
         .expect("Could not get solutionversion from xhana_solution_sid");
-
-    let pdcid = xhanahost
-        .select(schema::xhanahost::dsl::dcid)
-        .filter(schema::xhanahost::dsl::hostname.eq(&phostname))
-        .distinct()
-        .load::<i32>(conn)
-        .expect("Could not get datacenter ID from xhanahost");
-    
-    let pdcid_i32 : i32 = pdcid[0];
-
     // Wenn ein Rückgabewert, dann weiter
     if psolutionversion.len() == 1 {
         let mut i_str = "";
@@ -249,7 +233,7 @@ pub fn add_xhana_sid_host<'a>(
             i_str = i.as_str();
         }
 
-        println!("w= {:?}", &i_str);
+        // println!("w= {:?}", &i_str);
         // now we update xhanahost and xhana_sid_host
         // for xhanahost I use a helper function
         let rv: XHanaHostTable = add_xhana_host(conn, phostname, &pdcid_i32);
@@ -257,6 +241,7 @@ pub fn add_xhana_sid_host<'a>(
             solutionversion: i_str,
             sid: psid,
             hostname: phostname,
+            arc: parc,
         };
 
         diesel::insert_into(xhana_sid_host)
@@ -269,12 +254,13 @@ pub fn add_xhana_sid_host<'a>(
             .do_update()
             .set(&new_xhs)
             .get_result(conn)
-            .expect("Error saving new parameter string")
+            .expect("Error saving dataset to xhana_sid_host")
     } else {
-        panic!("Keinen Wert gefunden");
+        panic!("Didn't found a value");
     }
 }
 
+/// Definition von allgemeinen XHANA - Parameterwerten. Wird von add_xhana_config verwendet.
 fn add_xhana_general(
     conn: &PgConnection,
     pparameterversion: &str,
@@ -314,6 +300,7 @@ fn add_xhana_general(
         .expect("Error saving new parameter string")
 }
 
+/// Definition von hostspezifischen Parameterwerten. Wird von add_xhana_config verwendet.
 fn add_xhana_host_para(
     conn: &PgConnection,
     phostname: &str,
@@ -352,7 +339,8 @@ fn add_xhana_host_para(
         .expect("Error saving new parameter string in xhana_host_para!")
 }
 
-
+/// Definition von SID spezifischen Parameterwerten.
+/// Wird benutzt von add_xhana_config
 fn add_xhana_sid_para(
     conn: &PgConnection,
     psid: &str,
@@ -374,7 +362,7 @@ fn add_xhana_sid_para(
             _ => pvalue,
         },
         arc: parc,
-        iotype: piotype,        
+        iotype: piotype,
     };
 
     diesel::insert_into(xhana_sid_para)
@@ -391,7 +379,7 @@ fn add_xhana_sid_para(
         .expect("Error saving new parameter string in xhana_sid_para!")
 }
 
-
+/// Hinzufügen eines Konfigurationswertes
 pub fn add_xhana_config(
     conn: &PgConnection,
     pparameterversion: &str,
@@ -403,7 +391,6 @@ pub fn add_xhana_config(
 ) {
     use schema::xhanaparameter::dsl::*;
     use schema::xhanasolution::dsl::*;
-   
     let xhp = xhanaparameter
         .filter(schema::xhanaparameter::dsl::parameter.eq(&pparameter))
         .filter(schema::xhanaparameter::dsl::parameterversion.eq(&pparameterversion))
@@ -417,7 +404,7 @@ pub fn add_xhana_config(
 
     // when no returnvalue then panic
     if xhp.len() == 0 {
-        panic! ("No Parameter / Version combination found")
+        panic!("No Parameter / Version combination found")
     }
 
     for i in xhp {
@@ -429,7 +416,7 @@ pub fn add_xhana_config(
                     .get_result::<i64>(conn)
                     .expect("Error in Query count xhanasolution");
 
-                println!("xhs={}",xhs);
+                println!("xhs={}", xhs);
 
                 if xhs > 0 {
                     add_xhana_general(
@@ -450,19 +437,45 @@ pub fn add_xhana_config(
                     println!("IOtype: {:?}", i.iotype);
                     println!("arc: {:?}", i.arc);
                     println!("Mandatory: {:?}", i.mandatory);
-                    println!("Solutionversion: {:?}", psolutionversion);            
+                    println!("Solutionversion: {:?}", psolutionversion);
                     panic!("Sorry Solution {:?} is not definied!", &psolutionversion)
                 };
             } else {
-                panic!("You will set a value of a general parameter but a solution is not definied!")
+                panic!(
+                    "You will set a value of a general parameter but a solution is not definied!"
+                )
             }
         }
         if i.scope == "host" {
             if phostname != "EMPTY" {
-                    add_xhana_host_para(conn, phostname, &*i.parameterversion, 
-                             &*i.arc, &*i.parameter,&*i.iotype, pvalue);
-                    } 
-            else {
+                use schema::xhana_sid_host::dsl::*;
+                let xhs = xhana_sid_host
+                    .select(arc)
+                    .filter(schema::xhana_sid_host::dsl::hostname.eq(&phostname))
+                    .distinct()
+                    .load::<String>(conn)
+                    .expect("Error in Query xhana_sid_host");
+                // when no returnvalue then panic
+                if xhs.len() == 0 {
+                    panic!("Hostname in Table xhana_sid_host not found!")
+                }
+
+                // Vec<String> in &str umwandeln
+                let mut xhs_arc = "";
+                for j in xhs.iter() {
+                    xhs_arc = j.as_str();
+                }
+
+                add_xhana_host_para(
+                    conn,
+                    phostname,
+                    &*i.parameterversion,
+                    &*xhs_arc,
+                    &*i.parameter,
+                    &*i.iotype,
+                    pvalue,
+                );
+            } else {
                 println!("Parameterversion: {:?}", i.parameterversion);
                 println!("Parameter: {:?}", i.parameter);
                 println!("Info: {:?}", i.info);
@@ -470,16 +483,22 @@ pub fn add_xhana_config(
                 println!("IOtype: {:?}", i.iotype);
                 println!("arc: {:?}", i.arc);
                 println!("Mandatory: {:?}", i.mandatory);
-                println!("Solutionversion: {:?}", psolutionversion);        
+                println!("Solutionversion: {:?}", psolutionversion);
                 panic!("You will set a value of a host parameter but no host is definied!")
             }
         }
         if i.scope == "sap" {
             if psid != "EMPTY" {
-                add_xhana_sid_para(conn, psid, &*i.parameterversion,
-                    &*i.parameter, pvalue, &*i.arc, &*i.iotype);
-                    } 
-            else {
+                add_xhana_sid_para(
+                    conn,
+                    psid,
+                    &*i.parameterversion,
+                    &*i.parameter,
+                    pvalue,
+                    &*i.arc,
+                    &*i.iotype,
+                );
+            } else {
                 println!("Parameterversion: {:?}", i.parameterversion);
                 println!("Parameter: {:?}", i.parameter);
                 println!("Info: {:?}", i.info);
@@ -487,15 +506,32 @@ pub fn add_xhana_config(
                 println!("IOtype: {:?}", i.iotype);
                 println!("arc: {:?}", i.arc);
                 println!("Mandatory: {:?}", i.mandatory);
-                println!("Solutionversion: {:?}", psolutionversion);        
+                println!("Solutionversion: {:?}", psolutionversion);
                 panic!("You will set a value of a SID parameter but no SID is definied!")
             }
         }
-        
 
         // add entry in xhanageneral
         // &* wandelt String in &str um
     }
 
     // fill xhanageneral
+}
+
+pub fn query_xhana_sid(conn: &PgConnection, psid: &str) {
+    use schema::xhanasid::dsl::*;
+    println!("in Function SID = {}", &psid);
+
+    let query_xhanasid = xhanasid
+        .filter(sid.eq(&psid))
+        .load::<XHanaSIDTable>(conn)
+        .expect("Could not find SID in table xhanasid");
+
+    //let debug = diesel::debug_query::<diesel::pg::Pg, _>(&query_xhanasid);
+    //println!("The insert query: {:?}", debug);
+
+    println!("SID  - Name");
+    if query_xhanasid.len() == 0 {
+        panic!("No Version  found")
+    }
 }
